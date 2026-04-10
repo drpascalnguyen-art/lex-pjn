@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>Lex · PJN — Daily Protocol</title>
+<title>Lex · PJN — Daily Priming Executive Protocol</title>
 
 <!-- PWA -->
 <link rel="manifest" href="./manifest.json" />
@@ -129,22 +129,32 @@ function getGreeting(){const h=new Date().getHours();if(h>=5&&h<12)return"Good M
 function formatTime(s){return`${Math.floor(s/60)}:${(s%60).toString().padStart(2,"0")}`;}
 function formatDate(){return new Date().toLocaleDateString("en-US",{weekday:"long",year:"numeric",month:"long",day:"numeric"});}
 
-// ─── AMBIENT SOUND ENGINE ───────────────────────────────────────────────────────
+// ─── ZEN AMBIENT SOUND ENGINE ─────────────────────────────────────────────────
+// Morning: Beta binaural beats (14Hz) + ascending zen tones + singing bowl harmonics
+// Evening: Theta binaural beats (6Hz) + descending ambient pads + soft wind
 const audioCtxRef = { current: null };
 const nodesRef = { current: [] };
+const intervalsRef = { current: [] };
 
-function createNoise(ctx, type) {
+function createPad(ctx, freq, gain, detune) {
+  const osc = ctx.createOscillator(); osc.type = "sine"; osc.frequency.value = freq;
+  if (detune) osc.detune.value = detune;
+  const g = ctx.createGain(); g.gain.value = gain;
+  osc.connect(g);
+  return { osc, gain: g };
+}
+
+function createSoftNoise(ctx, vol, cutoff) {
   const bufferSize = 2 * ctx.sampleRate;
   const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
   const output = buffer.getChannelData(0);
-  if (type === "brown") {
-    let last = 0;
-    for (let i = 0; i < bufferSize; i++) { const white = Math.random() * 2 - 1; last = (last + 0.02 * white) / 1.02; output[i] = last * 3.5; }
-  } else {
-    for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
-  }
+  let last = 0;
+  for (let i = 0; i < bufferSize; i++) { const w = Math.random() * 2 - 1; last = (last + 0.02 * w) / 1.02; output[i] = last * 3.5; }
   const src = ctx.createBufferSource(); src.buffer = buffer; src.loop = true;
-  return src;
+  const filter = ctx.createBiquadFilter(); filter.type = "lowpass"; filter.frequency.value = cutoff;
+  const g = ctx.createGain(); g.gain.value = vol;
+  src.connect(filter); filter.connect(g);
+  return { src, gain: g, filter };
 }
 
 function startMorningAmbient() {
@@ -152,37 +162,77 @@ function startMorningAmbient() {
   audioCtxRef.current = ctx;
   const nodes = [];
 
-  // Soft wind / brown noise
-  const wind = createNoise(ctx, "brown");
-  const windGain = ctx.createGain(); windGain.gain.value = 0.08;
-  const windFilter = ctx.createBiquadFilter(); windFilter.type = "lowpass"; windFilter.frequency.value = 400;
-  wind.connect(windFilter); windFilter.connect(windGain); windGain.connect(ctx.destination);
-  wind.start(); nodes.push(wind, windGain, windFilter);
+  // ── Beta binaural beat (14Hz) for focus/activation ──
+  // Left ear: 200Hz, Right ear: 214Hz → 14Hz beta entrainment
+  const merger = ctx.createChannelMerger(2);
+  merger.connect(ctx.destination);
+  const binL = ctx.createOscillator(); binL.type = "sine"; binL.frequency.value = 200;
+  const binLG = ctx.createGain(); binLG.gain.value = 0.06;
+  binL.connect(binLG); binLG.connect(merger, 0, 0);
+  const binR = ctx.createOscillator(); binR.type = "sine"; binR.frequency.value = 214;
+  const binRG = ctx.createGain(); binRG.gain.value = 0.06;
+  binR.connect(binRG); binRG.connect(merger, 0, 1);
+  binL.start(); binR.start();
+  nodes.push(binL, binR, binLG, binRG);
 
-  // Gentle stream / filtered white noise
-  const stream = createNoise(ctx, "white");
-  const streamGain = ctx.createGain(); streamGain.gain.value = 0.03;
-  const streamBP = ctx.createBiquadFilter(); streamBP.type = "bandpass"; streamBP.frequency.value = 800; streamBP.Q.value = 1.5;
-  stream.connect(streamBP); streamBP.connect(streamGain); streamGain.connect(ctx.destination);
-  stream.start(); nodes.push(stream, streamGain, streamBP);
+  // ── Zen pad chord: C major 7th (C3-E3-G3-B3) — warm, uplifting ──
+  const padFreqs = [130.81, 164.81, 196.00, 246.94];
+  padFreqs.forEach((f, i) => {
+    const p = createPad(ctx, f, 0.018, (i - 1.5) * 4);
+    p.gain.connect(ctx.destination); p.osc.start();
+    nodes.push(p.osc, p.gain);
+    // Subtle vibrato
+    const lfo = ctx.createOscillator(); lfo.type = "sine"; lfo.frequency.value = 0.15 + i * 0.05;
+    const lfoG = ctx.createGain(); lfoG.gain.value = 1.5;
+    lfo.connect(lfoG); lfoG.connect(p.osc.frequency);
+    lfo.start(); nodes.push(lfo, lfoG);
+  });
 
-  // Bird-like chirps via oscillators
-  function chirp() {
+  // ── Soft airy texture (very gentle filtered noise) ──
+  const air = createSoftNoise(ctx, 0.02, 250);
+  air.gain.connect(ctx.destination); air.src.start();
+  nodes.push(air.src, air.gain, air.filter);
+
+  // ── Singing bowl chimes — periodic harmonic tones ──
+  function singingBowl() {
     if (!audioCtxRef.current || audioCtxRef.current.state === "closed") return;
-    const osc = ctx.createOscillator(); const g = ctx.createGain();
-    osc.type = "sine";
-    const baseFreq = 2000 + Math.random() * 2000;
-    osc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(baseFreq * (0.8 + Math.random() * 0.4), ctx.currentTime + 0.1);
-    osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.2, ctx.currentTime + 0.15);
+    const baseFreq = [396, 528, 639, 741, 852][Math.floor(Math.random() * 5)];
+    const osc = ctx.createOscillator(); osc.type = "sine"; osc.frequency.value = baseFreq;
+    const osc2 = ctx.createOscillator(); osc2.type = "sine"; osc2.frequency.value = baseFreq * 2.01;
+    const g = ctx.createGain(); const g2 = ctx.createGain();
     g.gain.setValueAtTime(0, ctx.currentTime);
-    g.gain.linearRampToValueAtTime(0.015, ctx.currentTime + 0.02);
-    g.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15 + Math.random() * 0.1);
+    g.gain.linearRampToValueAtTime(0.025, ctx.currentTime + 0.8);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 6);
+    g2.gain.setValueAtTime(0, ctx.currentTime);
+    g2.gain.linearRampToValueAtTime(0.008, ctx.currentTime + 0.5);
+    g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 4);
     osc.connect(g); g.connect(ctx.destination);
-    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.3);
-    setTimeout(chirp, 2000 + Math.random() * 6000);
+    osc2.connect(g2); g2.connect(ctx.destination);
+    osc.start(); osc2.start();
+    osc.stop(ctx.currentTime + 7); osc2.stop(ctx.currentTime + 5);
   }
-  setTimeout(chirp, 1000);
+  singingBowl();
+  const bowlInt = setInterval(singingBowl, 8000 + Math.random() * 5000);
+  intervalsRef.current.push(bowlInt);
+
+  // ── Slow ascending arpeggio — pentatonic scale, every ~12s ──
+  function zenArp() {
+    if (!audioCtxRef.current || audioCtxRef.current.state === "closed") return;
+    const scale = [261.63, 293.66, 329.63, 392.00, 523.25];
+    scale.forEach((f, i) => {
+      const t = ctx.currentTime + i * 0.6;
+      const osc = ctx.createOscillator(); osc.type = "sine"; osc.frequency.value = f;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.012, t + 0.2);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 2.5);
+      osc.connect(g); g.connect(ctx.destination);
+      osc.start(t); osc.stop(t + 3);
+    });
+  }
+  const arpInt = setInterval(zenArp, 15000);
+  intervalsRef.current.push(arpInt);
+  setTimeout(zenArp, 4000);
 
   nodesRef.current = nodes;
 }
@@ -192,42 +242,95 @@ function startEveningAmbient() {
   audioCtxRef.current = ctx;
   const nodes = [];
 
-  // Deep ambient drone
-  const drone = ctx.createOscillator(); drone.type = "sine"; drone.frequency.value = 80;
-  const droneGain = ctx.createGain(); droneGain.gain.value = 0.04;
-  drone.connect(droneGain); droneGain.connect(ctx.destination);
-  drone.start(); nodes.push(drone, droneGain);
+  // ── Theta binaural beat (6Hz) for deep calm/meditation ──
+  // Left ear: 144Hz, Right ear: 150Hz → 6Hz theta entrainment
+  const merger = ctx.createChannelMerger(2);
+  merger.connect(ctx.destination);
+  const binL = ctx.createOscillator(); binL.type = "sine"; binL.frequency.value = 144;
+  const binLG = ctx.createGain(); binLG.gain.value = 0.05;
+  binL.connect(binLG); binLG.connect(merger, 0, 0);
+  const binR = ctx.createOscillator(); binR.type = "sine"; binR.frequency.value = 150;
+  const binRG = ctx.createGain(); binRG.gain.value = 0.05;
+  binR.connect(binRG); binRG.connect(merger, 0, 1);
+  binL.start(); binR.start();
+  nodes.push(binL, binR, binLG, binRG);
 
-  // Soft water / brown noise
-  const water = createNoise(ctx, "brown");
-  const waterGain = ctx.createGain(); waterGain.gain.value = 0.06;
-  const waterFilter = ctx.createBiquadFilter(); waterFilter.type = "lowpass"; waterFilter.frequency.value = 300;
-  water.connect(waterFilter); waterFilter.connect(waterGain); waterGain.connect(ctx.destination);
-  water.start(); nodes.push(water, waterGain, waterFilter);
+  // ── Deep ambient drone pad: A minor (A2-C3-E3) — soothing, grounding ──
+  const padFreqs = [110.00, 130.81, 164.81];
+  padFreqs.forEach((f, i) => {
+    const p = createPad(ctx, f, 0.022, (i - 1) * 3);
+    p.gain.connect(ctx.destination); p.osc.start();
+    nodes.push(p.osc, p.gain);
+    // Very slow vibrato
+    const lfo = ctx.createOscillator(); lfo.type = "sine"; lfo.frequency.value = 0.08 + i * 0.02;
+    const lfoG = ctx.createGain(); lfoG.gain.value = 1;
+    lfo.connect(lfoG); lfoG.connect(p.osc.frequency);
+    lfo.start(); nodes.push(lfo, lfoG);
+  });
 
-  // Cricket-like chirps
-  function cricket() {
+  // ── Warm sub-bass hum (grounding frequency) ──
+  const sub = ctx.createOscillator(); sub.type = "sine"; sub.frequency.value = 55;
+  const subG = ctx.createGain(); subG.gain.value = 0.025;
+  sub.connect(subG); subG.connect(ctx.destination);
+  sub.start(); nodes.push(sub, subG);
+
+  // ── Soft warm breath texture ──
+  const breath = createSoftNoise(ctx, 0.025, 180);
+  breath.gain.connect(ctx.destination); breath.src.start();
+  nodes.push(breath.src, breath.gain, breath.filter);
+  // Gentle swell on the noise
+  const breathLFO = ctx.createOscillator(); breathLFO.type = "sine"; breathLFO.frequency.value = 0.12;
+  const breathLFOG = ctx.createGain(); breathLFOG.gain.value = 0.012;
+  breathLFO.connect(breathLFOG); breathLFOG.connect(breath.gain.gain);
+  breathLFO.start(); nodes.push(breathLFO, breathLFOG);
+
+  // ── Tibetan bowl — low, resonant, every ~15s ──
+  function tibetanBowl() {
     if (!audioCtxRef.current || audioCtxRef.current.state === "closed") return;
-    const osc = ctx.createOscillator(); const g = ctx.createGain();
-    osc.type = "sine"; osc.frequency.value = 4000 + Math.random() * 1500;
-    const duration = 0.04 + Math.random() * 0.02;
-    const repeats = 2 + Math.floor(Math.random() * 4);
-    for (let r = 0; r < repeats; r++) {
-      const t = ctx.currentTime + r * 0.08;
-      g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(0.012, t + 0.005);
-      g.gain.linearRampToValueAtTime(0, t + duration);
-    }
+    const freq = [174.61, 220, 261.63][Math.floor(Math.random() * 3)];
+    const osc = ctx.createOscillator(); osc.type = "sine"; osc.frequency.value = freq;
+    const osc2 = ctx.createOscillator(); osc2.type = "sine"; osc2.frequency.value = freq * 3.01;
+    const g = ctx.createGain(); const g2 = ctx.createGain();
+    g.gain.setValueAtTime(0, ctx.currentTime);
+    g.gain.linearRampToValueAtTime(0.02, ctx.currentTime + 1.5);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 9);
+    g2.gain.setValueAtTime(0, ctx.currentTime);
+    g2.gain.linearRampToValueAtTime(0.005, ctx.currentTime + 1);
+    g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 6);
     osc.connect(g); g.connect(ctx.destination);
-    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + repeats * 0.08 + 0.1);
-    setTimeout(cricket, 1500 + Math.random() * 4000);
+    osc2.connect(g2); g2.connect(ctx.destination);
+    osc.start(); osc2.start();
+    osc.stop(ctx.currentTime + 10); osc2.stop(ctx.currentTime + 7);
   }
-  setTimeout(cricket, 500);
+  tibetanBowl();
+  const bowlInt = setInterval(tibetanBowl, 12000 + Math.random() * 6000);
+  intervalsRef.current.push(bowlInt);
+
+  // ── Descending wind chime — gentle pentatonic descent every ~20s ──
+  function windChime() {
+    if (!audioCtxRef.current || audioCtxRef.current.state === "closed") return;
+    const scale = [523.25, 392.00, 329.63, 261.63, 196.00];
+    scale.forEach((f, i) => {
+      const t = ctx.currentTime + i * 0.8;
+      const osc = ctx.createOscillator(); osc.type = "sine"; osc.frequency.value = f;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.008, t + 0.3);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 3.5);
+      osc.connect(g); g.connect(ctx.destination);
+      osc.start(t); osc.stop(t + 4);
+    });
+  }
+  const chimeInt = setInterval(windChime, 20000 + Math.random() * 8000);
+  intervalsRef.current.push(chimeInt);
+  setTimeout(windChime, 6000);
 
   nodesRef.current = nodes;
 }
 
 function stopAmbient() {
+  intervalsRef.current.forEach(id => clearInterval(id));
+  intervalsRef.current = [];
   nodesRef.current.forEach(n => { try { if (n.stop) n.stop(); else if (n.disconnect) n.disconnect(); } catch(e){} });
   nodesRef.current = [];
   if (audioCtxRef.current && audioCtxRef.current.state !== "closed") {
@@ -239,31 +342,33 @@ function stopAmbient() {
 // ─── DATA ───────────────────────────────────────────────────────────────────────
 const MORNING_STEPS = [
   {id:"breathing",label:"01 — Priming Breath",title:"Box Breathing Sequence",subtitle:"Tony Robbins Priming — Breath of Fire",color:"#059669",isBreathing:true},
-  {id:"gratitude",label:"02 — Gratitude",title:"3 Moments of Deep Gratitude",subtitle:"Feel it fully — not just think it",color:"#0891B2",
+  {id:"tm-meditation",label:"02 — TM Meditation",title:"Transcendental Meditation",subtitle:"20 minutes — effortless, silent, deep",color:"#8B5CF6",isTM:true},
+  {id:"gratitude",label:"03 — Gratitude",title:"3 Moments of Deep Gratitude",subtitle:"Feel it fully — not just think it",color:"#0891B2",
     prompts:["Think of something simple — a moment, a person, a sensation. Let your body feel it.","Now something in your work — a patient helped, a breakthrough, a skill earned.","Finally, something about who you ARE becoming. See it. Feel it already real."]},
-  {id:"healing",label:"03 — Energy & Healing",title:"Healing Visualization",subtitle:"Feel the energy move through you",color:"#0E7490",
+  {id:"healing",label:"04 — Energy & Healing",title:"Healing Visualization",subtitle:"Feel the energy move through you",color:"#0E7490",
     prompts:["Close your eyes. Visualize a brilliant white light entering through the crown of your head.","Feel it filling your chest — your heart, your lungs, your nervous system lighting up.","On every exhale, release what doesn't serve you. Tension, fear, noise. Let it go.","You are a biological practitioner. Your body is your instrument. Calibrate it now."]},
-  {id:"wins",label:"04 — Future Wins",title:"3 Wins from the Future",subtitle:"Live into them NOW — past tense, present feeling",color:"#047857",
+  {id:"wins",label:"05 — Future Wins",title:"3 Wins from the Future",subtitle:"Live into them NOW — past tense, present feeling",color:"#047857",
     prompts:['WIN 1 — Your body: "I showed up strong today. I trained, I fueled, I recovered. My vitality is non-negotiable."','WIN 2 — Your family: "I was present. I led with warmth and strength. My marriage deepened. My kids felt my love."','WIN 3 — Your practice: "I moved PJN forward today. I led clearly, acted decisively, and created something that matters."']},
-  {id:"identity",label:"05 — Identity Lock",title:"Who You Are",subtitle:"Say it. Mean it. Become it.",color:"#1D4ED8",
+  {id:"identity",label:"06 — Identity Lock",title:"Who You Are",subtitle:"Say it. Mean it. Become it.",color:"#1D4ED8",
     prompts:["I am a biological healer. I see what others miss and I treat the whole person.","I am a decisive leader. My team follows because I lead with clarity and calm.","I am a present husband and father. My family is my foundation.","I am Pascal 2.0 — building a legacy practice, a healthy body, and a life by design."]},
-  {id:"lifebook",label:"06 — Lifebook Vision",title:"Your Lifebook Reminder",subtitle:"Who you are becoming across every dimension",color:"#7C3AED",lifebook:true},
-  {id:"wins3",label:"07 — Today's 3 Wins",title:"What Makes Today a Win",subtitle:"Name your targets before the day names them for you",color:"#B45309",todayWins:true},
-  {id:"priorities",label:"08 — Strategic Builder",title:"Needle Movers vs. Noise",subtitle:"One question: what actually matters today?",color:"#0F766E",priorities:true},
-  {id:"polarity",label:"09 — Polarity Principles",title:"Your Frame",subtitle:"Hold it all day. No exceptions.",color:"#BE123C",
+  {id:"lifebook",label:"07 — Lifebook Vision",title:"Your Lifebook Reminder",subtitle:"Who you are becoming across every dimension",color:"#7C3AED",lifebook:true},
+  {id:"wins3",label:"08 — Today's 3 Wins",title:"What Makes Today a Win",subtitle:"Name your targets before the day names them for you",color:"#B45309",todayWins:true},
+  {id:"priorities",label:"09 — Strategic Builder",title:"Needle Movers vs. Noise",subtitle:"One question: what actually matters today?",color:"#0F766E",priorities:true},
+  {id:"polarity",label:"10 — Polarity Principles",title:"Your Frame",subtitle:"Hold it all day. No exceptions.",color:"#BE123C",
     principles:[{icon:"\u26A1",text:"Lead calmly",sub:"Regulate first. Respond from strength, not reaction."},{icon:"\uD83C\uDFAF",text:"Decide and act",sub:"Imperfect action beats perfect analysis. Move."},{icon:"\uD83D\uDD07",text:"Do not over-explain",sub:"Say it once. Clearly. Then let it land."},{icon:"\uD83E\uDDF1",text:"Hold frame",sub:"Your certainty is contagious. Chaos cannot enter a held frame."}]},
-  {id:"health",label:"10 — Health Stack",title:"Daily Health Practices",subtitle:"Check them off. Non-negotiable.",color:"#059669",health:true},
-  {id:"content",label:"11 — Content Creation",title:"What Will You Create Today?",subtitle:"Your audience is waiting for your knowledge",color:"#0369A1",contentQ:true},
-  {id:"strategic",label:"12 — Pascal 2.0 Question",title:"Your Strategic Question",subtitle:"One question. Sit with it.",color:"#7C3AED",strategic:true},
+  {id:"health",label:"11 — Health Stack",title:"Daily Health Practices",subtitle:"Check them off. Non-negotiable.",color:"#059669",health:true},
+  {id:"content",label:"12 — Content Creation",title:"What Will You Create Today?",subtitle:"Your audience is waiting for your knowledge",color:"#0369A1",contentQ:true},
+  {id:"strategic",label:"13 — Pascal 2.0 Question",title:"Your Strategic Question",subtitle:"One question. Sit with it.",color:"#7C3AED",strategic:true},
 ];
 
 const EVENING_STEPS = [
   {id:"e-breathing",label:"01 — Downshift",title:"Nervous System Downshift",subtitle:"Shift from sympathetic to parasympathetic — calm the system",color:"#4ADE80",isEveningBreathing:true},
-  {id:"e-wins",label:"02 — Win Review",title:"Daily Win Review",subtitle:"What made today a win?",color:"#FBBF24",eveningWins:true},
-  {id:"e-release",label:"03 — Release",title:"Release the Mental Load",subtitle:"Get it out of your head and onto the page",color:"#94A3B8",mentalRelease:true},
-  {id:"e-tomorrow",label:"04 — Rule of 3",title:"Tomorrow's Rule of 3",subtitle:"Choose three actions that would make tomorrow successful",color:"#34D399",tomorrowRule:true},
-  {id:"e-relationship",label:"05 — Relationship",title:"Relationship Ritual",subtitle:"Small consistent deposits strengthen everything",color:"#FB7185",relationship:true},
-  {id:"e-identity",label:"06 — Identity Lock",title:"Evening Identity Lock",subtitle:"Anchor who you are before you sleep",color:"#A78BFA",eveningIdentity:true},
+  {id:"e-tm-meditation",label:"02 — TM Meditation",title:"Evening TM Session",subtitle:"20 minutes — release the day, go inward",color:"#A78BFA",isTM:true},
+  {id:"e-wins",label:"03 — Win Review",title:"Daily Win Review",subtitle:"What made today a win?",color:"#FBBF24",eveningWins:true},
+  {id:"e-release",label:"04 — Release",title:"Release the Mental Load",subtitle:"Get it out of your head and onto the page",color:"#94A3B8",mentalRelease:true},
+  {id:"e-tomorrow",label:"05 — Rule of 3",title:"Tomorrow's Rule of 3",subtitle:"Choose three actions that would make tomorrow successful",color:"#34D399",tomorrowRule:true},
+  {id:"e-relationship",label:"06 — Relationship",title:"Relationship Ritual",subtitle:"Small consistent deposits strengthen everything",color:"#FB7185",relationship:true},
+  {id:"e-identity",label:"07 — Identity Lock",title:"Evening Identity Lock",subtitle:"Anchor who you are before you sleep",color:"#A78BFA",eveningIdentity:true},
 ];
 
 const HEALTH_ITEMS = [{id:"workout",label:"Workout",icon:"\uD83C\uDFCB\uFE0F"},{id:"sauna",label:"Sauna + Cold Plunge",icon:"\uD83E\uDDCA"},{id:"meditation",label:"Meditation (2\u00D7)",icon:"\uD83E\uDDD8"},{id:"pemf",label:"PEMF / Vagal Stimulation",icon:"\u26A1"},{id:"nutrition",label:"Nutrition & Hydration",icon:"\uD83E\uDD57"}];
@@ -343,6 +448,99 @@ function BreathingCircle({clr,phases,totalRounds,roundLabel,completeMsg}) {
     active&&phase!=="complete"&&React.createElement("button",{onClick:()=>{clearInterval(timerRef.current);clearInterval(elapsedRef.current);setActive(false);setPhase("ready");setRound(0);},style:{background:"transparent",border:"1px solid rgba(128,128,128,0.2)",padding:"8px 20px",borderRadius:6,cursor:"pointer",fontSize:11,letterSpacing:2,textTransform:"uppercase",opacity:0.5}},"Reset"));
 }
 
+// ─── TM MEDITATION TIMER ────────────────────────────────────────────────────────
+function TMTimer({th}) {
+  const TOTAL_SEC = 20 * 60;
+  const [phase,setPhase] = useState("pre"); // pre | active | paused | post
+  const [remaining,setRemaining] = useState(TOTAL_SEC);
+  const [elapsed,setElapsed] = useState(0);
+  const timerRef = useRef(null);
+  const audioCtxRef = useRef(null);
+
+  const playChime = useCallback(() => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      audioCtxRef.current = ctx;
+      const playTone = (freq, start, dur) => {
+        const osc = ctx.createOscillator(); const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = "sine"; osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0, ctx.currentTime + start);
+        gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + start + 0.3);
+        gain.gain.linearRampToValueAtTime(0, ctx.currentTime + start + dur);
+        osc.start(ctx.currentTime + start); osc.stop(ctx.currentTime + start + dur);
+      };
+      playTone(528, 0, 3); playTone(639, 1.2, 2.5); playTone(741, 2.4, 2);
+    } catch(e) {}
+  }, []);
+
+  useEffect(() => {
+    if (phase === "active") {
+      timerRef.current = setInterval(() => {
+        setRemaining(r => {
+          if (r <= 1) {
+            clearInterval(timerRef.current);
+            setPhase("post");
+            playChime();
+            return 0;
+          }
+          return r - 1;
+        });
+        setElapsed(e => e + 1);
+      }, 1000);
+      return () => clearInterval(timerRef.current);
+    }
+  }, [phase, playChime]);
+
+  useEffect(() => () => { clearInterval(timerRef.current); }, []);
+
+  const pct = ((TOTAL_SEC - remaining) / TOTAL_SEC) * 100;
+  const mins = Math.floor(remaining / 60);
+  const secs = remaining % 60;
+  const timeStr = `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+  const rgb = "139,92,246";
+
+  if (phase === "pre") {
+    return React.createElement("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",gap:28,maxWidth:500}},
+      React.createElement("div",{style:{padding:"28px 32px",background:th.cardBg,border:"1px solid rgba(139,92,246,0.15)",borderRadius:12,boxShadow:th.shadow,width:"100%"}},
+        React.createElement("div",{style:{fontSize:11,color:"#8B5CF6",letterSpacing:3,textTransform:"uppercase",marginBottom:16,fontWeight:600,textAlign:"center"}},"Before You Begin"),
+        React.createElement("div",{style:{fontSize:15,color:th.body,lineHeight:1.9,textAlign:"center"}},"Close your eyes. Settle in. Let your body relax completely."),
+        React.createElement("div",{style:{fontSize:15,color:th.body,lineHeight:1.9,textAlign:"center",marginTop:8}},"When ready, begin your mantra effortlessly."),
+        React.createElement("div",{style:{fontSize:13,color:th.muted,fontStyle:"italic",textAlign:"center",marginTop:16}},"Do not concentrate. Do not force. Let thoughts come and go.")),
+      React.createElement("button",{onClick:()=>setPhase("active"),style:{background:"rgba(139,92,246,0.1)",border:"1px solid rgba(139,92,246,0.4)",color:"#8B5CF6",padding:"14px 40px",borderRadius:8,cursor:"pointer",letterSpacing:3,textTransform:"uppercase",fontSize:13,fontWeight:600,transition:"all 0.2s"}},"Begin Meditation"));
+  }
+
+  if (phase === "post") {
+    return React.createElement("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",gap:28,maxWidth:500,animation:"mp-fadeSlideIn 0.6s ease"}},
+      React.createElement("div",{style:{fontSize:48,animation:"mp-float 3s ease-in-out infinite"}},"\uD83D\uDE4F"),
+      React.createElement("div",{style:{padding:"28px 32px",background:th.cardBg,border:"1px solid rgba(139,92,246,0.15)",borderRadius:12,boxShadow:th.shadow,width:"100%"}},
+        React.createElement("div",{style:{fontSize:11,color:"#8B5CF6",letterSpacing:3,textTransform:"uppercase",marginBottom:16,fontWeight:600,textAlign:"center"}},"Meditation Complete"),
+        React.createElement("div",{style:{fontSize:15,color:th.body,lineHeight:1.9,textAlign:"center"}},"Keep your eyes closed for 2 more minutes."),
+        React.createElement("div",{style:{fontSize:15,color:th.body,lineHeight:1.9,textAlign:"center",marginTop:8}},"Let awareness return gradually. There is no rush."),
+        React.createElement("div",{style:{fontSize:13,color:th.muted,fontStyle:"italic",textAlign:"center",marginTop:16}},"How do you feel? Notice the stillness.")),
+      React.createElement("div",{style:{fontSize:12,color:th.faint,letterSpacing:2}},formatTime(TOTAL_SEC) + " \u00B7 Session complete"));
+  }
+
+  // Active / Paused
+  const circumference = 2 * Math.PI * 96;
+  const strokeOffset = circumference - (pct / 100) * circumference;
+  return React.createElement("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",gap:28}},
+    React.createElement("div",{style:{position:"relative",width:220,height:220}},
+      phase==="active"&&React.createElement(React.Fragment,null,
+        React.createElement("div",{style:{position:"absolute",inset:-20,borderRadius:"50%",border:"1px solid rgba(139,92,246,0.25)",animation:"mp-pulse-ring 3.5s ease-in-out infinite"}}),
+        React.createElement("div",{style:{position:"absolute",inset:-40,borderRadius:"50%",border:"1px solid rgba(139,92,246,0.1)",animation:"mp-pulse-ring 3.5s ease-in-out infinite 1s"}})),
+      React.createElement("svg",{width:220,height:220,style:{position:"absolute",transform:"rotate(-90deg)"}},
+        React.createElement("circle",{cx:110,cy:110,r:96,fill:"none",stroke:"rgba(139,92,246,0.08)",strokeWidth:3}),
+        React.createElement("circle",{cx:110,cy:110,r:96,fill:"none",stroke:"#8B5CF6",strokeWidth:3,strokeDasharray:circumference,strokeDashoffset:strokeOffset,strokeLinecap:"round",style:{transition:"stroke-dashoffset 1s linear"}})),
+      React.createElement("div",{style:{width:220,height:220,borderRadius:"50%",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",position:"relative"}},
+        React.createElement("div",{style:{fontSize:38,fontWeight:700,color:"#8B5CF6",fontFamily:"Georgia,serif",letterSpacing:2}},timeStr),
+        React.createElement("div",{style:{fontSize:11,color:th.muted,letterSpacing:3,textTransform:"uppercase",marginTop:8}},phase==="active"?"Meditating":"Paused"))),
+    React.createElement("div",{style:{fontSize:13,color:th.muted,fontStyle:"italic",textAlign:"center",maxWidth:400}},"Let thoughts come and go. Return to the mantra effortlessly."),
+    React.createElement("div",{style:{display:"flex",gap:12}},
+      React.createElement("button",{onClick:()=>{if(phase==="active"){clearInterval(timerRef.current);setPhase("paused");}else{setPhase("active");}},style:{background:"rgba(139,92,246,0.1)",border:"1px solid rgba(139,92,246,0.3)",color:"#8B5CF6",padding:"10px 28px",borderRadius:8,cursor:"pointer",fontSize:12,letterSpacing:2,textTransform:"uppercase"}},phase==="active"?"Pause":"Resume"),
+      React.createElement("button",{onClick:()=>{clearInterval(timerRef.current);setPhase("post");playChime();},style:{background:"transparent",border:"1px solid rgba(128,128,128,0.2)",padding:"10px 28px",borderRadius:8,cursor:"pointer",fontSize:12,letterSpacing:2,textTransform:"uppercase",color:th.faint}},"End Early")));
+}
+
 // ─── SIDEBAR ────────────────────────────────────────────────────────────────────
 function SidebarComp({steps,currentStep,onSelect,completedSteps,T:th}){
   return React.createElement("div",{style:{width:240,minWidth:240,borderRight:`1px solid ${th.border}`,padding:"20px 0",overflowY:"auto",display:"flex",flexDirection:"column",background:th.sidebarBg}},
@@ -420,15 +618,15 @@ function HomeScreen({onSelect}){
       React.createElement("div",{className:"mp-home-card",onClick:()=>onSelect("morning"),style:{flex:"1 1 280px",maxWidth:320,padding:"36px 32px",borderRadius:16,cursor:"pointer",background:"rgba(255,255,255,0.75)",border:suggested==="morning"?"2px solid rgba(5,150,105,0.4)":"1px solid rgba(0,60,30,0.1)",transition:"all 0.3s",position:"relative",overflow:"hidden",boxShadow:"0 4px 20px rgba(0,40,20,0.08)"}},
         suggested==="morning"&&React.createElement("div",{style:{position:"absolute",top:16,right:16,fontSize:10,letterSpacing:2,color:"#059669",textTransform:"uppercase",background:"rgba(5,150,105,0.08)",padding:"4px 10px",borderRadius:10}},"Suggested"),
         React.createElement("div",{style:{fontSize:36,marginBottom:16}},"\u2600\uFE0F"),
-        React.createElement("div",{style:{fontSize:20,fontWeight:700,color:"#1A3328",marginBottom:8}},"Morning Command"),
-        React.createElement("div",{style:{fontSize:13,color:"#4D7160",lineHeight:1.7}},"12 steps \u00B7 Activate your nervous system, set your identity, design your day"),
+        React.createElement("div",{style:{fontSize:20,fontWeight:700,color:"#1A3328",marginBottom:8}},"Morning Priming"),
+        React.createElement("div",{style:{fontSize:13,color:"#4D7160",lineHeight:1.7}},"13 steps \u00B7 Activate your nervous system, meditate, set your identity, design your day"),
         React.createElement("div",{style:{marginTop:20,fontSize:12,color:"#059669",letterSpacing:2,textTransform:"uppercase",fontWeight:600}},"Start \u2192")),
       // Evening
       React.createElement("div",{className:"mp-home-card",onClick:()=>onSelect("evening"),style:{flex:"1 1 280px",maxWidth:320,padding:"36px 32px",borderRadius:16,cursor:"pointer",background:"rgba(6,10,8,0.85)",border:suggested==="evening"?"2px solid rgba(74,222,128,0.4)":"1px solid rgba(74,222,128,0.1)",transition:"all 0.3s",position:"relative",overflow:"hidden",boxShadow:"0 4px 20px rgba(0,0,0,0.3)",backdropFilter:"blur(8px)"}},
         suggested==="evening"&&React.createElement("div",{style:{position:"absolute",top:16,right:16,fontSize:10,letterSpacing:2,color:"#4ADE80",textTransform:"uppercase",background:"rgba(74,222,128,0.1)",padding:"4px 10px",borderRadius:10}},"Suggested"),
         React.createElement("div",{style:{fontSize:36,marginBottom:16}},"\uD83C\uDF19"),
-        React.createElement("div",{style:{fontSize:20,fontWeight:700,color:"#E8F5EC",marginBottom:8}},"Evening Reset"),
-        React.createElement("div",{style:{fontSize:13,color:"#6A9E7A",lineHeight:1.7}},"6 steps \u00B7 Clear mental load, review wins, design tomorrow, rest with clarity"),
+        React.createElement("div",{style:{fontSize:20,fontWeight:700,color:"#E8F5EC",marginBottom:8}},"Evening Wind Down"),
+        React.createElement("div",{style:{fontSize:13,color:"#6A9E7A",lineHeight:1.7}},"7 steps \u00B7 Clear mental load, meditate, review wins, design tomorrow, rest with clarity"),
         React.createElement("div",{style:{marginTop:20,fontSize:12,color:"#4ADE80",letterSpacing:2,textTransform:"uppercase",fontWeight:600}},"Start \u2192"))),
     React.createElement("div",{style:{marginTop:48,fontSize:11,color:"#7A9E8C",letterSpacing:1}},"Choose your protocol to begin"));}
 
@@ -488,7 +686,7 @@ function ProtocolEngine({mode,onHome}){
         React.createElement(SoundToggle,{mode,playing:soundPlaying,onToggle:toggleSound}),
         React.createElement("div",null,
           React.createElement("div",{style:{fontSize:10,letterSpacing:4,color:th.faint,textTransform:"uppercase"}},"Lex \u00B7 PJN"),
-          React.createElement("div",{style:{fontSize:15,color:th.body,letterSpacing:0.5}},isMorning?"Morning Command Protocol":"Evening Reset Protocol"))),
+          React.createElement("div",{style:{fontSize:15,color:th.body,letterSpacing:0.5}},isMorning?"Morning Priming Protocol":"Evening Wind Down Protocol"))),
       React.createElement("div",{style:{display:"flex",alignItems:"center",gap:24}},
         React.createElement("div",{style:{fontSize:12,color:th.faint,letterSpacing:2,fontFamily:"monospace",fontWeight:600}},formatTime(sessionElapsed)),
         React.createElement("div",{style:{textAlign:"right"}},
@@ -513,6 +711,8 @@ function ProtocolEngine({mode,onHome}){
             React.createElement("div",{style:{fontSize:15,color:th.muted,fontStyle:"italic"}},step.subtitle)),
 
           // ─── MORNING SECTIONS ─────────────────────────────────────
+          step.isTM&&React.createElement(TMTimer,{th}),
+
           step.isBreathing&&React.createElement("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",gap:28}},
             React.createElement("p",{style:{color:th.muted,lineHeight:1.8,textAlign:"center",maxWidth:480,fontSize:14}},"3 rounds of box breathing. Fast, sharp breaths. This activates your nervous system and floods your body with energy before the day begins."),
             React.createElement(BreathingCircle,{clr:"#059669",phases:[{name:"Inhale",duration:4,instruction:"Through your nose — fast, powerful"},{name:"Hold",duration:4,instruction:"Suspend — feel the charge"},{name:"Exhale",duration:4,instruction:"Sharp out — release everything"},{name:"Rest",duration:4,instruction:"Empty — rest in the stillness"}],totalRounds:3,roundLabel:"Round",completeMsg:"Priming complete — nervous system activated"})),
