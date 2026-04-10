@@ -349,16 +349,18 @@ const MORNING_STEPS = [
     prompts:["Close your eyes. Visualize a brilliant white light entering through the crown of your head.","Feel it filling your chest — your heart, your lungs, your nervous system lighting up.","On every exhale, release what doesn't serve you. Tension, fear, noise. Let it go.","You are a biological practitioner. Your body is your instrument. Calibrate it now."]},
   {id:"wins",label:"05 — Future Wins",title:"3 Wins from the Future",subtitle:"Live into them NOW — past tense, present feeling",color:"#047857",
     prompts:['WIN 1 — Your body: "I showed up strong today. I trained, I fueled, I recovered. My vitality is non-negotiable."','WIN 2 — Your family: "I was present. I led with warmth and strength. My marriage deepened. My kids felt my love."','WIN 3 — Your practice: "I moved PJN forward today. I led clearly, acted decisively, and created something that matters."']},
-  {id:"identity",label:"06 — Identity Lock",title:"Who You Are",subtitle:"Say it. Mean it. Become it.",color:"#1D4ED8",
+  {id:"self-compassion",label:"06 — Self-Compassion",title:"Evidence of the Man You Already Are",subtitle:"Give yourself the credit you actually earned",color:"#9F1239",
+    prompts:["Name one specific thing you did yesterday that you did not give yourself credit for. Not the perfect version — the actual one. Under pressure, tired, with a two-year-old at your leg. Let it count.","Speak to yourself the way you would speak to a brother carrying the same weight you carry. What would you tell him? Tell yourself that now — out loud if you can.","The life you have — the marriage, the kids, a practice producing at a level most dentists never touch, a new building you moved into while treating patients, a lawsuit you won — none of it happened by accident. You built it. Exhausted. Alone in the decisions. That is evidence. Let it in.","The harsh voice that judges you is not the truth. It is a habit. Today when it speaks, you will notice it and return to this: I am doing the work. I am enough as I do it. My effort counts, not just the outcome."]},
+  {id:"identity",label:"07 — Identity Lock",title:"Who You Are",subtitle:"Say it. Mean it. Become it.",color:"#1D4ED8",
     prompts:["I am a biological healer. I see what others miss and I treat the whole person.","I am a decisive leader. My team follows because I lead with clarity and calm.","I am a present husband and father. My family is my foundation.","I am Pascal 2.0 — building a legacy practice, a healthy body, and a life by design."]},
-  {id:"lifebook",label:"07 — Lifebook Vision",title:"Your Lifebook Reminder",subtitle:"Who you are becoming across every dimension",color:"#7C3AED",lifebook:true},
-  {id:"wins3",label:"08 — Today's 3 Wins",title:"What Makes Today a Win",subtitle:"Name your targets before the day names them for you",color:"#B45309",todayWins:true},
-  {id:"priorities",label:"09 — Strategic Builder",title:"Needle Movers vs. Noise",subtitle:"One question: what actually matters today?",color:"#0F766E",priorities:true},
-  {id:"polarity",label:"10 — Polarity Principles",title:"Your Frame",subtitle:"Hold it all day. No exceptions.",color:"#BE123C",
+  {id:"lifebook",label:"08 — Lifebook Vision",title:"Your Lifebook Reminder",subtitle:"Who you are becoming across every dimension",color:"#7C3AED",lifebook:true},
+  {id:"wins3",label:"09 — Today's 3 Wins",title:"What Makes Today a Win",subtitle:"Name your targets before the day names them for you",color:"#B45309",todayWins:true},
+  {id:"priorities",label:"10 — Strategic Builder",title:"Needle Movers vs. Noise",subtitle:"One question: what actually matters today?",color:"#0F766E",priorities:true},
+  {id:"polarity",label:"11 — Polarity Principles",title:"Your Frame",subtitle:"Hold it all day. No exceptions.",color:"#BE123C",
     principles:[{icon:"\u26A1",text:"Lead calmly",sub:"Regulate first. Respond from strength, not reaction."},{icon:"\uD83C\uDFAF",text:"Decide and act",sub:"Imperfect action beats perfect analysis. Move."},{icon:"\uD83D\uDD07",text:"Do not over-explain",sub:"Say it once. Clearly. Then let it land."},{icon:"\uD83E\uDDF1",text:"Hold frame",sub:"Your certainty is contagious. Chaos cannot enter a held frame."}]},
-  {id:"health",label:"11 — Health Stack",title:"Daily Health Practices",subtitle:"Check them off. Non-negotiable.",color:"#059669",health:true},
-  {id:"content",label:"12 — Content Creation",title:"What Will You Create Today?",subtitle:"Your audience is waiting for your knowledge",color:"#0369A1",contentQ:true},
-  {id:"strategic",label:"13 — Pascal 2.0 Question",title:"Your Strategic Question",subtitle:"One question. Sit with it.",color:"#7C3AED",strategic:true},
+  {id:"health",label:"12 — Health Stack",title:"Daily Health Practices",subtitle:"Check them off. Non-negotiable.",color:"#059669",health:true},
+  {id:"content",label:"13 — Content Creation",title:"What Will You Create Today?",subtitle:"Your audience is waiting for your knowledge",color:"#0369A1",contentQ:true},
+  {id:"strategic",label:"14 — Pascal 2.0 Question",title:"Your Strategic Question",subtitle:"One question. Sit with it.",color:"#7C3AED",strategic:true},
 ];
 
 const EVENING_STEPS = [
@@ -719,7 +721,7 @@ function ProtocolEngine({mode,onHome}){
 
           step.prompts&&React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:18}},
             step.prompts.map((p,i)=>React.createElement("div",{key:i,className:th.cardClass,style:{padding:"22px 24px",background:th.cardBg,border:`1px solid rgba(${rgb},0.15)`,borderLeft:`3px solid ${step.color}`,borderRadius:8,transition:"all 0.3s",animation:`mp-fadeSlideIn 0.4s ease ${i*0.08}s both`,boxShadow:th.shadow}},
-              React.createElement("div",{style:{fontSize:10,color:step.color,letterSpacing:3,marginBottom:10,textTransform:"uppercase",fontWeight:600}},step.id==="wins"?`Win ${i+1}`:step.id==="identity"?`Declaration ${i+1}`:`Step ${i+1}`),
+              React.createElement("div",{style:{fontSize:10,color:step.color,letterSpacing:3,marginBottom:10,textTransform:"uppercase",fontWeight:600}},step.id==="wins"?`Win ${i+1}`:step.id==="identity"?`Declaration ${i+1}`:step.id==="self-compassion"?`Evidence ${i+1}`:`Step ${i+1}`),
               React.createElement("div",{style:{color:th.body,lineHeight:1.75,fontSize:15}},p)))),
 
           step.principles&&React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:14}},
