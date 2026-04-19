@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --cream: #fef9ef;
+  --sage: #22c55e;
+  --blush: #ec4899;
+  --sky: #0ea5e9;
+}
+
+html,
+body,
+#root {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: #fef9ef;
+  color: #1f2937;
+}
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: 'Playfair Display', serif;
+  letter-spacing: -0.01em;
+}
+
+.glass {
+  background: rgba(255, 253, 247, 0.72);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+.text-shadow-soft {
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.25);
+}
+
+/* Elegant scroll bar for desktop */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(34, 197, 94, 0.35);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Villi animation for What Is Gluten */
+@keyframes villi-wave {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.45); }
+}
+.villi-healthy > span {
+  animation: villi-wave 2.6s ease-in-out infinite;
+}
+.villi-damaged > span:nth-child(odd) {
+  animation: villi-wave 1.2s ease-in-out infinite;
+  transform-origin: bottom;
+  opacity: 0.4;
+}
+.villi-damaged > span:nth-child(even) {
+  transform: scaleY(0.25);
+  opacity: 0.25;
+}
+
+/* Card hover lift */
+.lift {
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s;
+}
+.lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -20px rgba(15, 23, 42, 0.25);
+}
+
+/* Reusable pill */
+.pill {
+  @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium;
+}
+
+/* Safe-area padding on mobile */
+.pt-safe { padding-top: env(safe-area-inset-top); }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
