@@ -22,6 +22,37 @@
       rel="stylesheet"
     />
     <title>GlutenWise — Heal Your Gut, Beautifully</title>
+    <script>
+      // One-time cleanup of legacy Lex PJN service worker + caches
+      (function () {
+        if (!('serviceWorker' in navigator)) return;
+        if (localStorage.getItem('glutenwise:migrated-v2') === '1') return;
+        var mustReload = false;
+        navigator.serviceWorker.getRegistrations().then(function (regs) {
+          var jobs = regs.map(function (r) {
+            var url = (r.active && r.active.scriptURL) || '';
+            // Unregister anything that isn't the Workbox SW vite-plugin-pwa ships
+            if (!/workbox|vite/i.test(url)) {
+              mustReload = true;
+              return r.unregister();
+            }
+            return Promise.resolve();
+          });
+          return Promise.all(jobs);
+        }).then(function () {
+          return caches.keys();
+        }).then(function (keys) {
+          return Promise.all(
+            keys
+              .filter(function (k) { return /^lex-pjn|^mp-/i.test(k); })
+              .map(function (k) { mustReload = true; return caches.delete(k); })
+          );
+        }).then(function () {
+          localStorage.setItem('glutenwise:migrated-v2', '1');
+          if (mustReload) location.reload();
+        }).catch(function () {});
+      })();
+    </script>
   </head>
   <body class="font-sans antialiased">
     <div id="root"></div>
