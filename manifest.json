@@ -1,12 +1,12 @@
 {
-  "name": "Lex - PJN Daily Protocol",
-  "short_name": "Lex PJN",
-  "description": "Morning Command & Evening Reset Protocol",
+  "name": "Pascal's Priming App",
+  "short_name": "Priming",
+  "description": "Private daily priming, tracking & self-worth system",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#D6E4DB",
-  "theme_color": "#1A3328",
+  "background_color": "#f5f3ec",
+  "theme_color": "#f5f3ec",
   "icons": [
     {
       "src": "icon-192.png",

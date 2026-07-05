@@ -1,901 +1,845 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>Lex · PJN — Daily Priming Executive Protocol</title>
-
-<!-- PWA -->
-<link rel="manifest" href="./manifest.json" />
-<meta name="theme-color" content="#1A3328" />
-
-<!-- iOS PWA -->
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="Lex PJN" />
-<link rel="apple-touch-icon" href="./apple-touch-icon.png" />
-
-<!-- Splash screens for iOS -->
-<meta name="mobile-web-app-capable" content="yes" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+<title>Pascal's Priming App</title>
+<meta name="theme-color" content="#f5f3ec"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Priming"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+<link rel="icon" type="image/svg+xml" href="icon.svg"/>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { height: -webkit-fill-available; }
-  body { background: #D6E4DB; overflow-x: hidden; min-height: 100vh; min-height: -webkit-fill-available;
-    padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom);
-    padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right);
-    -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout: none; }
-  textarea, input { -webkit-user-select: text; user-select: text; }
-  @keyframes mp-fadeSlideIn { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
-  @keyframes mp-fadeIn { from { opacity:0; } to { opacity:1; } }
-  @keyframes mp-pulse-ring { 0% { transform:scale(0.95); opacity:0.5; } 50% { transform:scale(1.15); opacity:0; } 100% { transform:scale(0.95); opacity:0; } }
-  @keyframes mp-float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-8px); } }
-  @keyframes mp-shimmer { 0% { background-position:-200% 0; } 100% { background-position:200% 0; } }
-  @keyframes mp-glow { 0%,100% { opacity:0.3; } 50% { opacity:0.6; } }
-  @keyframes mp-checkPop { 0% { transform:scale(0.8); } 50% { transform:scale(1.2); } 100% { transform:scale(1); } }
-  @keyframes mp-completionFade { from { opacity:0; transform:scale(0.95); } to { opacity:1; transform:scale(1); } }
-  @keyframes mp-lockSpin { 0% { transform:rotateY(0deg); } 100% { transform:rotateY(360deg); } }
-  @keyframes aurora1 {
-    0%   { transform: translateX(-30%) translateY(-20%) rotate(0deg); opacity:0.3; }
-    25%  { transform: translateX(10%) translateY(-10%) rotate(15deg); opacity:0.5; }
-    50%  { transform: translateX(30%) translateY(-25%) rotate(-10deg); opacity:0.35; }
-    75%  { transform: translateX(-10%) translateY(-15%) rotate(5deg); opacity:0.55; }
-    100% { transform: translateX(-30%) translateY(-20%) rotate(0deg); opacity:0.3; }
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;}
+  html{
+    --bg:#f5f3ec; --bg-grad:linear-gradient(175deg,#faf8f1 0%,#eef0e6 55%,#e9eee7 100%);
+    --card:#ffffff; --card2:#f7f6ef; --line:#e5e2d4;
+    --ink:#22312a; --dim:#71806f; --dimmer:#9aa696;
+    --green:#0f9d63; --green-soft:#e2f4ea; --amber:#d97706; --amber-soft:#fdf0dc;
+    --violet:#7c5cd6; --violet-soft:#efe9fb; --blue:#0284c7; --blue-soft:#e3f2fb;
+    --shadow:0 10px 26px rgba(80,90,70,.10);
   }
-  @keyframes aurora2 {
-    0%   { transform: translateX(20%) translateY(-30%) rotate(5deg); opacity:0.25; }
-    33%  { transform: translateX(-20%) translateY(-20%) rotate(-15deg); opacity:0.4; }
-    66%  { transform: translateX(10%) translateY(-35%) rotate(10deg); opacity:0.3; }
-    100% { transform: translateX(20%) translateY(-30%) rotate(5deg); opacity:0.25; }
+  html.night{
+    --bg:#1c2721; --bg-grad:linear-gradient(175deg,#233029 0%,#1b2620 55%,#182119 100%);
+    --card:#26332b; --card2:#212d26; --line:#334438;
+    --ink:#e9f2ec; --dim:#93a698; --dimmer:#6b7d70;
+    --green:#4ade80; --green-soft:#1d3a2a; --amber:#fbbf24; --amber-soft:#3a2f16;
+    --violet:#a78bfa; --violet-soft:#2b2542; --blue:#38bdf8; --blue-soft:#15303f;
+    --shadow:0 10px 26px rgba(0,0,0,.28);
   }
-  @keyframes aurora3 {
-    0%   { transform: translateX(0%) translateY(-10%) rotate(-5deg); opacity:0.2; }
-    50%  { transform: translateX(-25%) translateY(-20%) rotate(8deg); opacity:0.45; }
-    100% { transform: translateX(0%) translateY(-10%) rotate(-5deg); opacity:0.2; }
-  }
-  @keyframes aurora-pulse {
-    0%,100% { filter: blur(60px) brightness(1); }
-    50%     { filter: blur(80px) brightness(1.3); }
-  }
-  .mp-step-card-morning:hover { background: rgba(255,255,255,0.85) !important; border-color: rgba(0,80,40,0.18) !important; }
-  .mp-step-card-evening:hover { background: rgba(255,255,255,0.06) !important; border-color: rgba(74,222,128,0.2) !important; }
-  .mp-nav-dot:hover { transform: scale(1.5); }
-  .mp-health-item:hover { transform: translateX(4px); }
-  .mp-sidebar-item:hover { background: rgba(0,0,0,0.04) !important; }
-  .mp-sidebar-item-dark:hover { background: rgba(74,222,128,0.08) !important; }
-  .mp-home-card:hover { transform: translateY(-4px) !important; }
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); }
+  body{background:var(--bg);font-family:'Space Grotesk',sans-serif;color:var(--ink);min-height:100vh;min-height:100dvh;transition:background .4s;}
+  textarea,input,select{-webkit-user-select:text;user-select:text;}
+  #app{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;background:var(--bg-grad);position:relative;transition:background .4s;}
+  .screen{display:none;padding:calc(14px + env(safe-area-inset-top)) 0 calc(110px + env(safe-area-inset-bottom));min-height:100vh;min-height:100dvh;}
+  .screen.active{display:block;}
+  .pad{padding:0 20px;}
+
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:8px 20px 0;}
+  .brand{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:2.5px;color:var(--dim);}
+  .hdr .right{display:flex;gap:9px;align-items:center;}
+  .mode{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;font-size:15px;cursor:pointer;color:var(--ink);}
+  .streakchip{display:flex;align-items:center;gap:5px;background:var(--amber-soft);border-radius:20px;padding:7px 12px;font-weight:700;font-size:13px;color:var(--amber);}
+
+  h1.greet{font-family:'Fraunces',serif;font-size:30px;font-weight:600;letter-spacing:-.4px;margin:14px 0 2px;}
+  .subline{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--dim);}
+
+  .xp{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:13px 16px;box-shadow:var(--shadow);}
+  .xp .row{display:flex;justify-content:space-between;font-size:12px;font-weight:600;}
+  .xp .lv{color:var(--violet);}
+  .xp .n{font-family:'JetBrains Mono',monospace;color:var(--dim);}
+  .xpbar{height:8px;border-radius:6px;background:var(--card2);border:1px solid var(--line);margin-top:8px;overflow:hidden;}
+  .xpbar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--violet),var(--green));transition:width .4s;}
+
+  .rings{display:flex;gap:10px;margin:14px 0 4px;}
+  .ring{flex:1;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:13px 8px;text-align:center;box-shadow:var(--shadow);}
+  .dial{width:54px;height:54px;border-radius:50%;margin:0 auto 7px;display:grid;place-items:center;}
+  .dial .in{width:41px;height:41px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-weight:700;font-size:12.5px;}
+  .rl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);}
+
+  .sectitle{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin:18px 0 10px;display:flex;justify-content:space-between;}
+  .sectitle .r{color:var(--violet);}
+
+  .mirror{background:linear-gradient(120deg,var(--violet-soft),var(--card));border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:var(--shadow);cursor:pointer;}
+  .mirror .k{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--violet);}
+  .mirror h3{font-family:'Fraunces',serif;font-size:19px;font-weight:600;margin:7px 0 4px;line-height:1.25;}
+  .mirror p{font-size:12.5px;color:var(--dim);}
+  .mirror .go{margin-top:10px;display:inline-block;font-size:12.5px;font-weight:700;color:var(--violet);}
+
+  .mod{display:flex;align-items:center;gap:13px;border-radius:20px;padding:15px 16px;margin-bottom:10px;cursor:pointer;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow);transition:.15s;}
+  .mod:active{transform:scale(.985);}
+  .mod.morning{background:linear-gradient(110deg,var(--amber-soft) 0%,var(--card) 65%);}
+  .mod.evening{background:linear-gradient(110deg,var(--blue-soft) 0%,var(--card) 65%);}
+  .mod .dot{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;font-size:21px;background:var(--card2);border:1px solid var(--line);flex-shrink:0;}
+  .mod .txt{flex:1;}
+  .mod .txt h4{font-size:16px;font-weight:600;}
+  .mod .txt p{font-size:11px;color:var(--dim);margin-top:2px;font-family:'JetBrains Mono',monospace;}
+  .mod .cta{font-size:19px;color:var(--green);font-weight:700;}
+
+  .quest{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:8px;box-shadow:var(--shadow);cursor:pointer;}
+  .quest .ck{width:26px;height:26px;border-radius:9px;border:2px solid var(--line);display:grid;place-items:center;font-size:14px;color:transparent;background:var(--card2);flex-shrink:0;}
+  .quest.done .ck{background:var(--green);border-color:var(--green);color:#fff;}
+  .quest .qtxt{flex:1;font-size:13.5px;font-weight:600;}
+  .quest.done .qtxt{text-decoration:line-through;color:var(--dimmer);}
+  .quest .sub{display:block;font-weight:400;font-size:10.5px;color:var(--dim);font-family:'JetBrains Mono',monospace;margin-top:1px;text-decoration:none;}
+  .quest .xpv{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--violet);font-weight:600;}
+
+  .hydro{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:15px 17px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);}
+  .hydro .big{font-family:'Fraunces',serif;font-size:30px;font-weight:600;color:var(--blue);line-height:1;}
+  .hydro .u{font-size:11px;color:var(--dim);font-family:'JetBrains Mono',monospace;}
+  .hydro .bar{flex:1;height:8px;border-radius:6px;background:var(--card2);border:1px solid var(--line);overflow:hidden;}
+  .hydro .bar i{display:block;height:100%;background:var(--blue);border-radius:6px;transition:width .3s;}
+  .plus{width:42px;height:42px;border-radius:13px;background:var(--blue-soft);color:var(--blue);font-size:21px;font-weight:700;border:1px solid var(--line);cursor:pointer;flex-shrink:0;}
+  .plus:active{transform:scale(.9);}
+
+  .foot{font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.8px;color:var(--dimmer);text-align:center;margin:22px 0 6px;}
+
+  /* runner */
+  .run-top{display:flex;align-items:center;gap:13px;padding:8px 20px 0;}
+  .back{font-size:21px;color:var(--dim);cursor:pointer;background:none;border:none;}
+  .prog{flex:1;height:6px;border-radius:4px;background:var(--card2);border:1px solid var(--line);overflow:hidden;}
+  .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--amber),var(--green));transition:width .35s;}
+  .stepno{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--amber);}
+  .run-body{padding:26px 26px 40px;text-align:center;}
+  .run-body .kick{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);}
+  .run-body h2{font-family:'Fraunces',serif;font-size:29px;font-weight:600;line-height:1.12;margin:10px 0 10px;}
+  .run-body p.desc{font-size:14px;color:var(--dim);line-height:1.5;max-width:300px;margin:0 auto;}
+  .run-actions{padding:0 26px 20px;}
+  .nextbtn{width:100%;background:linear-gradient(100deg,var(--amber),#b45309);color:#fff;border:none;padding:17px;border-radius:28px;font-size:15.5px;font-weight:700;cursor:pointer;font-family:'Space Grotesk';box-shadow:0 10px 24px rgba(217,119,6,.3);}
+  .nextbtn:active{transform:scale(.98);}
+
+  .boxwrap{margin:26px auto 18px;width:190px;height:190px;position:relative;}
+  .boxsq{position:absolute;inset:0;border-radius:34px;border:3px solid var(--amber);opacity:.35;}
+  .boxcore{position:absolute;inset:24px;border-radius:26px;background:linear-gradient(135deg,var(--amber-soft),var(--card));border:1px solid var(--line);display:grid;place-items:center;transition:transform 3.5s ease-in-out;box-shadow:var(--shadow);}
+  .boxcore .cnt{font-family:'Fraunces',serif;font-size:52px;font-weight:600;color:var(--amber);}
+  .phase{font-size:16px;font-weight:700;margin-top:2px;color:var(--amber);}
+  .roundlbl{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim);margin-top:8px;}
+
+  .ginput,.gtext{width:100%;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;font-size:14px;font-family:'Space Grotesk';color:var(--ink);margin-top:10px;outline:none;box-shadow:var(--shadow);}
+  .gtext{min-height:90px;resize:none;}
+  .ginput::placeholder,.gtext::placeholder{color:var(--dimmer);}
+  .chips{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap;}
+  .chip{padding:10px 16px;border-radius:20px;border:1px solid var(--line);background:var(--card);font-size:13px;font-weight:600;cursor:pointer;color:var(--dim);}
+  .chip.on{background:var(--amber);color:#fff;border-color:var(--amber);}
+  .vispick .chip.on{background:var(--violet);border-color:var(--violet);}
+
+  .lgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:16px;text-align:left;}
+  .lcat{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:12px;cursor:pointer;box-shadow:var(--shadow);}
+  .lcat .e{font-size:17px;}
+  .lcat h5{font-size:12px;font-weight:700;margin-top:4px;}
+  .lcat.rev{border-color:var(--green);background:var(--green-soft);}
+  .lcat.rev h5::after{content:' ✓';color:var(--green);}
+  .lq{margin-top:14px;background:var(--violet-soft);border:1px solid var(--line);border-radius:16px;padding:14px 16px;text-align:left;display:none;}
+  .lq .cat{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--violet);}
+  .lq p{font-family:'Fraunces',serif;font-size:16px;font-style:italic;margin-top:5px;line-height:1.35;}
+  .lq button{margin-top:10px;background:var(--violet);color:#fff;border:none;border-radius:16px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Space Grotesk';}
+  .viscard{margin-top:16px;background:linear-gradient(135deg,var(--violet-soft),var(--card));border:1px solid var(--line);border-radius:20px;padding:20px;text-align:left;display:none;box-shadow:var(--shadow);}
+  .viscard .d{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--violet);text-transform:uppercase;}
+  .viscard p{font-family:'Fraunces',serif;font-size:16.5px;font-style:italic;line-height:1.45;margin-top:8px;}
+
+  /* body tab */
+  .tt{font-family:'Fraunces',serif;font-size:25px;font-weight:600;padding:10px 20px 0;}
+  .segrow{display:flex;gap:7px;padding:14px 20px 4px;}
+  .seg{flex:1;text-align:center;padding:9px 4px;border-radius:13px;font-size:12px;font-weight:700;cursor:pointer;background:var(--card);border:1px solid var(--line);color:var(--dim);}
+  .seg.on{background:var(--green);color:#fff;border-color:var(--green);}
+  .grouplbl{display:flex;justify-content:space-between;align-items:center;margin:14px 0 8px;}
+  .grouplbl .g{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);}
+  .grouplbl .rem{font-size:10.5px;font-family:'JetBrains Mono',monospace;color:var(--amber);background:var(--amber-soft);padding:4px 9px;border-radius:12px;}
+  .stackitem{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 14px;margin-bottom:8px;box-shadow:var(--shadow);}
+  .stackitem .pill{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:18px;background:var(--card2);border:1px solid var(--line);flex-shrink:0;}
+  .stackitem .info{flex:1;min-width:0;}
+  .stackitem .info h4{font-size:14px;font-weight:600;}
+  .stackitem .info p{font-size:10.5px;color:var(--dim);font-family:'JetBrains Mono',monospace;margin-top:1px;}
+  .take{padding:8px 14px;border-radius:18px;border:1.5px solid var(--green);color:var(--green);background:none;font-size:11.5px;font-weight:700;cursor:pointer;font-family:'Space Grotesk';white-space:nowrap;}
+  .take.done{background:var(--green);color:#fff;}
+  .del{background:none;border:none;color:var(--dimmer);font-size:15px;cursor:pointer;padding:4px;}
+  .addrow{border:1.5px dashed var(--line);border-radius:16px;padding:13px;text-align:center;color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:11.5px;cursor:pointer;margin-bottom:8px;}
+  .addform{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:10px;display:none;}
+  .addform .frow{display:flex;gap:8px;}
+  .addform input,.addform select{flex:1;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13px;font-family:'Space Grotesk';color:var(--ink);margin-top:8px;outline:none;min-width:0;}
+  .addform .fbtn{margin-top:10px;width:100%;background:var(--green);color:#fff;border:none;border-radius:16px;padding:11px;font-weight:700;font-size:13px;cursor:pointer;font-family:'Space Grotesk';}
+
+  .week{display:flex;gap:6px;margin:4px 0 14px;}
+  .day{flex:1;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:9px 2px;cursor:pointer;}
+  .day .dl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim);}
+  .day .dc{font-size:14px;margin-top:3px;}
+  .day.hit{background:var(--green-soft);border-color:var(--green);}
+  .day.today{outline:2px solid var(--amber);}
+  .tut{background:linear-gradient(135deg,var(--violet-soft),var(--card));border:1px solid var(--line);border-radius:20px;padding:17px;margin-bottom:10px;box-shadow:var(--shadow);}
+  .tut .lab{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--violet);}
+  .tut h3{font-family:'Fraunces',serif;font-size:20px;margin:5px 0 2px;}
+  .tut .big{font-family:'Fraunces',serif;font-size:34px;color:var(--violet);font-weight:600;line-height:1.1;}
+  .tut .row{display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim);margin-top:8px;font-family:'JetBrains Mono',monospace;}
+
+  .recitem{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 15px;margin-bottom:9px;box-shadow:var(--shadow);}
+  .recitem .top{display:flex;justify-content:space-between;align-items:center;}
+  .recitem h4{font-size:14px;font-weight:600;}
+  .recitem .cnt{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--dim);}
+  .dots{display:flex;gap:5px;margin-top:9px;}
+  .rdot{width:22px;height:8px;border-radius:5px;background:var(--card2);border:1px solid var(--line);}
+  .rdot.f{background:var(--green);border-color:var(--green);}
+  .logbtn{padding:7px 13px;border-radius:16px;border:1.5px solid var(--green);color:var(--green);background:none;font-size:11px;font-weight:700;cursor:pointer;font-family:'Space Grotesk';}
+  .duo{display:flex;gap:9px;margin-top:4px;}
+  .duocard{flex:1;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 10px;text-align:center;box-shadow:var(--shadow);}
+  .duocard .e{font-size:19px;}
+  .duocard h5{font-size:11.5px;font-weight:700;margin:4px 0 7px;}
+  .ampm{display:flex;gap:5px;justify-content:center;}
+  .ap{padding:5px 10px;border-radius:12px;border:1px solid var(--line);font-size:10px;font-weight:700;cursor:pointer;color:var(--dim);background:var(--card2);}
+  .ap.on{background:var(--green);color:#fff;border-color:var(--green);}
+
+  /* mirror */
+  .mirbig{margin:18px 20px 0;background:linear-gradient(130deg,var(--violet-soft),var(--card));border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:var(--shadow);}
+  .mirbig .k{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--violet);}
+  .mirbig h2{font-family:'Fraunces',serif;font-size:23px;font-weight:600;line-height:1.22;margin:10px 0 12px;}
+  .lockbtn{margin-top:12px;width:100%;background:var(--violet);color:#fff;border:none;border-radius:22px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Space Grotesk';}
+  .lockbtn.locked{background:var(--green);}
+  .evid{margin:16px 20px 0;}
+  .evitem{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 15px;margin-bottom:8px;box-shadow:var(--shadow);}
+  .evitem .d{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--dim);letter-spacing:1px;}
+  .evitem p{font-size:13px;margin-top:4px;line-height:1.4;}
+  .wincard{margin:14px 20px 0;background:linear-gradient(120deg,var(--green-soft),var(--card));border:1px solid var(--line);border-radius:20px;padding:16px 18px;box-shadow:var(--shadow);}
+  .wincard .k{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);}
+  .wincard p{font-family:'Fraunces',serif;font-size:15.5px;font-style:italic;margin-top:6px;line-height:1.35;}
+
+  .toast{position:fixed;top:calc(14px + env(safe-area-inset-top));left:50%;transform:translateX(-50%) translateY(-110px);background:var(--amber);color:#fff;font-weight:700;font-size:13.5px;padding:12px 22px;border-radius:24px;z-index:100;transition:transform .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 10px 26px rgba(0,0,0,.25);white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis;}
+  .toast.show{transform:translateX(-50%) translateY(0);}
+
+  .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;align-items:flex-start;padding:11px 0 calc(10px + env(safe-area-inset-bottom));z-index:40;}
+  .nav .n{text-align:center;cursor:pointer;flex:1;color:var(--dimmer);transition:.15s;}
+  .nav .n .i{font-size:20px;}
+  .nav .n .t{font-size:9.5px;margin-top:3px;font-family:'JetBrains Mono',monospace;}
+  .nav .n.on{color:var(--green);}
 </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel">
-const { useState, useEffect, useRef, useCallback } = React;
+<div id="app">
+  <div class="toast" id="toast"></div>
+
+  <!-- HOME -->
+  <section class="screen active" id="s-home">
+    <div class="hdr">
+      <div class="brand">PASCAL'S PRIMING APP</div>
+      <div class="right">
+        <div class="streakchip">🔥 <span id="streakN">0</span></div>
+        <div class="mode" id="modeBtn" onclick="toggleTheme()">☾</div>
+      </div>
+    </div>
+    <div class="pad">
+      <h1 class="greet" id="greet">Good morning, Pascal</h1>
+      <div class="subline" id="subline"></div>
+      <div class="xp">
+        <div class="row"><span class="lv" id="lvLbl">⚡ Pascal 2.0 · Level 1</span><span class="n" id="xpN">0 / 500 XP</span></div>
+        <div class="xpbar"><i id="xpBar" style="width:0%"></i></div>
+      </div>
+      <div class="rings">
+        <div class="ring"><div class="dial" id="dPrime"><div class="in" style="color:var(--green);" id="dPrimeIn">0%</div></div><div class="rl">Prime</div></div>
+        <div class="ring"><div class="dial" id="dHydro"><div class="in" style="color:var(--blue);" id="dHydroIn">0%</div></div><div class="rl">Hydrate</div></div>
+        <div class="ring"><div class="dial" id="dQuest"><div class="in" style="color:var(--violet);" id="dQuestIn">0/9</div></div><div class="rl">Quests</div></div>
+      </div>
+      <div class="sectitle">// The mirror</div>
+      <div class="mirror" onclick="go('mirror')">
+        <div class="k">Daily self-worth check · 20 XP</div>
+        <h3 id="mirHomeQ"></h3>
+        <p>One honest answer. It goes in your Evidence Locker.</p>
+        <span class="go" id="mirHomeGo">Answer →</span>
+      </div>
+      <div class="sectitle">// Protocols</div>
+      <div class="mod morning" onclick="startRun('morning')">
+        <div class="dot">☀️</div>
+        <div class="txt"><h4>Morning Priming</h4><p>breath · gratitude · one thing · lifebook · vision</p></div>
+        <div class="cta" id="mornCta">→</div>
+      </div>
+      <div class="mod evening" onclick="startRun('evening')">
+        <div class="dot">🌙</div>
+        <div class="txt"><h4>Evening Wind Down</h4><p>wins · clear the load · design tomorrow</p></div>
+        <div class="cta" id="eveCta">→</div>
+      </div>
+      <div class="sectitle">// Hydration</div>
+      <div class="hydro">
+        <div><div class="big" id="hOz">0</div><div class="u">/ <span id="hGoal">90</span> oz</div></div>
+        <div class="bar"><i id="hBar" style="width:0%"></i></div>
+        <button class="plus" onclick="addWater()">+</button>
+      </div>
+      <div class="sectitle">// Today's quests <span class="r" id="qLeft"></span></div>
+      <div id="questList"></div>
+      <div class="foot">LOCAL-ONLY · PRIVATE · NOT MEDICAL ADVICE</div>
+    </div>
+  </section>
+
+  <!-- RUNNER -->
+  <section class="screen" id="s-run">
+    <div class="run-top">
+      <button class="back" onclick="go('home')">←</button>
+      <div class="prog"><i id="runBar"></i></div>
+      <div class="stepno" id="runNo"></div>
+    </div>
+    <div class="run-body" id="runBody"></div>
+    <div class="run-actions"><button class="nextbtn" id="nextBtn" onclick="nextStep()">Continue →</button></div>
+  </section>
+
+  <!-- BODY -->
+  <section class="screen" id="s-body">
+    <div class="tt">Body</div>
+    <div class="segrow">
+      <div class="seg on" id="seg-stack" onclick="segSel('stack')">Stack</div>
+      <div class="seg" id="seg-train" onclick="segSel('train')">Training</div>
+      <div class="seg" id="seg-rec" onclick="segSel('rec')">Recovery</div>
+    </div>
+    <div class="pad" id="pane-stack" style="margin-top:6px;"></div>
+    <div class="pad" id="pane-train" style="display:none;margin-top:6px;"></div>
+    <div class="pad" id="pane-rec" style="display:none;margin-top:6px;"></div>
+  </section>
+
+  <!-- MIRROR -->
+  <section class="screen" id="s-mirror">
+    <div class="tt">The Mirror</div>
+    <div class="mirbig">
+      <div class="k" id="mirDayLbl">Today's question</div>
+      <h2 id="mirQ"></h2>
+      <textarea class="gtext" id="mirA" placeholder="Speak to yourself the way you'd speak to someone you respect…"></textarea>
+      <button class="lockbtn" id="lockBtn" onclick="lockEvidence()">Lock it in the Evidence Locker · +20 XP</button>
+    </div>
+    <div class="wincard" id="winCard" style="display:none;">
+      <div class="k" id="winK">Yesterday you said</div>
+      <p id="winTxt"></p>
+    </div>
+    <div class="evid">
+      <div class="sectitle" style="padding:0;">// Evidence locker <span id="evCount"></span></div>
+      <div id="evList"></div>
+    </div>
+    <div class="foot">Your own words, resurfaced when the self-talk turns dark.</div>
+  </section>
+
+  <!-- NAV -->
+  <div class="nav">
+    <div class="n on" id="nav-home" onclick="go('home')"><div class="i">◎</div><div class="t">Today</div></div>
+    <div class="n" id="nav-run" onclick="startRun('morning')"><div class="i">☀️</div><div class="t">Prime</div></div>
+    <div class="n" id="nav-body" onclick="go('body')"><div class="i">🏋️</div><div class="t">Body</div></div>
+    <div class="n" id="nav-mirror" onclick="go('mirror')"><div class="i">🪞</div><div class="t">Mirror</div></div>
+  </div>
+</div>
 
-// ─── THEMES ─────────────────────────────────────────────────────────────────────
-const THEMES = {
-  morning: {
-    bg: "#D6E4DB",
-    heading: "#1A3328",
-    body: "#2A4A3C",
-    muted: "#4D7160",
-    faint: "#7A9E8C",
-    border: "rgba(0,60,30,0.1)",
-    cardBg: "rgba(255,255,255,0.75)",
-    headerBg: "rgba(214,228,219,0.88)",
-    sidebarBg: "rgba(255,255,255,0.45)",
-    inputBg: "rgba(255,255,255,0.7)",
-    inputBorder: "rgba(5,120,80,0.2)",
-    completionBg: "rgba(214,228,219,0.98)",
-    checkColor: "#fff",
-    checkBg: "#059669",
-    shadow: "0 1px 4px rgba(0,40,20,0.06)",
-    cardClass: "mp-step-card-morning",
-    sidebarClass: "mp-sidebar-item",
-    dotInactive: "rgba(0,60,30,0.12)",
-    navBtn: { bg:"transparent", border:"rgba(0,60,30,0.12)", color:"#4D7160", disabledColor:"#A8C4B4" },
-  },
-  evening: {
-    bg: "#060A08",
-    heading: "#E8F5EC",
-    body: "#B8D4C0",
-    muted: "#6A9E7A",
-    faint: "#3D6B4E",
-    border: "rgba(74,222,128,0.1)",
-    cardBg: "rgba(255,255,255,0.04)",
-    headerBg: "rgba(6,10,8,0.85)",
-    sidebarBg: "rgba(0,0,0,0.3)",
-    inputBg: "rgba(255,255,255,0.05)",
-    inputBorder: "rgba(74,222,128,0.2)",
-    completionBg: "rgba(6,10,8,0.98)",
-    checkColor: "#060A08",
-    checkBg: "#4ADE80",
-    shadow: "0 1px 4px rgba(0,0,0,0.3)",
-    cardClass: "mp-step-card-evening",
-    sidebarClass: "mp-sidebar-item-dark",
-    dotInactive: "rgba(74,222,128,0.12)",
-    navBtn: { bg:"transparent", border:"rgba(74,222,128,0.15)", color:"#6A9E7A", disabledColor:"#1E3A28" },
-  },
-};
-
-function hexToRgb(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`${r},${g},${b}`;}
-function getGreeting(){const h=new Date().getHours();if(h>=5&&h<12)return"Good Morning";if(h>=12&&h<17)return"Good Afternoon";if(h>=17&&h<21)return"Good Evening";return"Rest Well";}
-function formatTime(s){return`${Math.floor(s/60)}:${(s%60).toString().padStart(2,"0")}`;}
-function formatDate(){return new Date().toLocaleDateString("en-US",{weekday:"long",year:"numeric",month:"long",day:"numeric"});}
-
-// ─── ZEN AMBIENT SOUND ENGINE ─────────────────────────────────────────────────
-// Morning: Beta binaural beats (14Hz) + ascending zen tones + singing bowl harmonics
-// Evening: Theta binaural beats (6Hz) + descending ambient pads + soft wind
-const audioCtxRef = { current: null };
-const nodesRef = { current: [] };
-const intervalsRef = { current: [] };
-
-function createPad(ctx, freq, gain, detune) {
-  const osc = ctx.createOscillator(); osc.type = "sine"; osc.frequency.value = freq;
-  if (detune) osc.detune.value = detune;
-  const g = ctx.createGain(); g.gain.value = gain;
-  osc.connect(g);
-  return { osc, gain: g };
-}
-
-function createSoftNoise(ctx, vol, cutoff) {
-  const bufferSize = 2 * ctx.sampleRate;
-  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-  const output = buffer.getChannelData(0);
-  let last = 0;
-  for (let i = 0; i < bufferSize; i++) { const w = Math.random() * 2 - 1; last = (last + 0.02 * w) / 1.02; output[i] = last * 3.5; }
-  const src = ctx.createBufferSource(); src.buffer = buffer; src.loop = true;
-  const filter = ctx.createBiquadFilter(); filter.type = "lowpass"; filter.frequency.value = cutoff;
-  const g = ctx.createGain(); g.gain.value = vol;
-  src.connect(filter); filter.connect(g);
-  return { src, gain: g, filter };
-}
-
-function startMorningAmbient() {
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  audioCtxRef.current = ctx;
-  const nodes = [];
-
-  // ── Beta binaural beat (14Hz) for focus/activation ──
-  // Left ear: 200Hz, Right ear: 214Hz → 14Hz beta entrainment
-  const merger = ctx.createChannelMerger(2);
-  merger.connect(ctx.destination);
-  const binL = ctx.createOscillator(); binL.type = "sine"; binL.frequency.value = 200;
-  const binLG = ctx.createGain(); binLG.gain.value = 0.06;
-  binL.connect(binLG); binLG.connect(merger, 0, 0);
-  const binR = ctx.createOscillator(); binR.type = "sine"; binR.frequency.value = 214;
-  const binRG = ctx.createGain(); binRG.gain.value = 0.06;
-  binR.connect(binRG); binRG.connect(merger, 0, 1);
-  binL.start(); binR.start();
-  nodes.push(binL, binR, binLG, binRG);
-
-  // ── Zen pad chord: C major 7th (C3-E3-G3-B3) — warm, uplifting ──
-  const padFreqs = [130.81, 164.81, 196.00, 246.94];
-  padFreqs.forEach((f, i) => {
-    const p = createPad(ctx, f, 0.018, (i - 1.5) * 4);
-    p.gain.connect(ctx.destination); p.osc.start();
-    nodes.push(p.osc, p.gain);
-    // Subtle vibrato
-    const lfo = ctx.createOscillator(); lfo.type = "sine"; lfo.frequency.value = 0.15 + i * 0.05;
-    const lfoG = ctx.createGain(); lfoG.gain.value = 1.5;
-    lfo.connect(lfoG); lfoG.connect(p.osc.frequency);
-    lfo.start(); nodes.push(lfo, lfoG);
-  });
-
-  // ── Soft airy texture (very gentle filtered noise) ──
-  const air = createSoftNoise(ctx, 0.02, 250);
-  air.gain.connect(ctx.destination); air.src.start();
-  nodes.push(air.src, air.gain, air.filter);
-
-  // ── Singing bowl chimes — periodic harmonic tones ──
-  function singingBowl() {
-    if (!audioCtxRef.current || audioCtxRef.current.state === "closed") return;
-    const baseFreq = [396, 528, 639, 741, 852][Math.floor(Math.random() * 5)];
-    const osc = ctx.createOscillator(); osc.type = "sine"; osc.frequency.value = baseFreq;
-    const osc2 = ctx.createOscillator(); osc2.type = "sine"; osc2.frequency.value = baseFreq * 2.01;
-    const g = ctx.createGain(); const g2 = ctx.createGain();
-    g.gain.setValueAtTime(0, ctx.currentTime);
-    g.gain.linearRampToValueAtTime(0.025, ctx.currentTime + 0.8);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 6);
-    g2.gain.setValueAtTime(0, ctx.currentTime);
-    g2.gain.linearRampToValueAtTime(0.008, ctx.currentTime + 0.5);
-    g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 4);
-    osc.connect(g); g.connect(ctx.destination);
-    osc2.connect(g2); g2.connect(ctx.destination);
-    osc.start(); osc2.start();
-    osc.stop(ctx.currentTime + 7); osc2.stop(ctx.currentTime + 5);
-  }
-  singingBowl();
-  const bowlInt = setInterval(singingBowl, 8000 + Math.random() * 5000);
-  intervalsRef.current.push(bowlInt);
-
-  // ── Slow ascending arpeggio — pentatonic scale, every ~12s ──
-  function zenArp() {
-    if (!audioCtxRef.current || audioCtxRef.current.state === "closed") return;
-    const scale = [261.63, 293.66, 329.63, 392.00, 523.25];
-    scale.forEach((f, i) => {
-      const t = ctx.currentTime + i * 0.6;
-      const osc = ctx.createOscillator(); osc.type = "sine"; osc.frequency.value = f;
-      const g = ctx.createGain();
-      g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(0.012, t + 0.2);
-      g.gain.exponentialRampToValueAtTime(0.001, t + 2.5);
-      osc.connect(g); g.connect(ctx.destination);
-      osc.start(t); osc.stop(t + 3);
-    });
-  }
-  const arpInt = setInterval(zenArp, 15000);
-  intervalsRef.current.push(arpInt);
-  setTimeout(zenArp, 4000);
-
-  nodesRef.current = nodes;
-}
-
-function startEveningAmbient() {
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  audioCtxRef.current = ctx;
-  const nodes = [];
-
-  // ── Theta binaural beat (6Hz) for deep calm/meditation ──
-  // Left ear: 144Hz, Right ear: 150Hz → 6Hz theta entrainment
-  const merger = ctx.createChannelMerger(2);
-  merger.connect(ctx.destination);
-  const binL = ctx.createOscillator(); binL.type = "sine"; binL.frequency.value = 144;
-  const binLG = ctx.createGain(); binLG.gain.value = 0.05;
-  binL.connect(binLG); binLG.connect(merger, 0, 0);
-  const binR = ctx.createOscillator(); binR.type = "sine"; binR.frequency.value = 150;
-  const binRG = ctx.createGain(); binRG.gain.value = 0.05;
-  binR.connect(binRG); binRG.connect(merger, 0, 1);
-  binL.start(); binR.start();
-  nodes.push(binL, binR, binLG, binRG);
-
-  // ── Deep ambient drone pad: A minor (A2-C3-E3) — soothing, grounding ──
-  const padFreqs = [110.00, 130.81, 164.81];
-  padFreqs.forEach((f, i) => {
-    const p = createPad(ctx, f, 0.022, (i - 1) * 3);
-    p.gain.connect(ctx.destination); p.osc.start();
-    nodes.push(p.osc, p.gain);
-    // Very slow vibrato
-    const lfo = ctx.createOscillator(); lfo.type = "sine"; lfo.frequency.value = 0.08 + i * 0.02;
-    const lfoG = ctx.createGain(); lfoG.gain.value = 1;
-    lfo.connect(lfoG); lfoG.connect(p.osc.frequency);
-    lfo.start(); nodes.push(lfo, lfoG);
-  });
-
-  // ── Warm sub-bass hum (grounding frequency) ──
-  const sub = ctx.createOscillator(); sub.type = "sine"; sub.frequency.value = 55;
-  const subG = ctx.createGain(); subG.gain.value = 0.025;
-  sub.connect(subG); subG.connect(ctx.destination);
-  sub.start(); nodes.push(sub, subG);
-
-  // ── Soft warm breath texture ──
-  const breath = createSoftNoise(ctx, 0.025, 180);
-  breath.gain.connect(ctx.destination); breath.src.start();
-  nodes.push(breath.src, breath.gain, breath.filter);
-  // Gentle swell on the noise
-  const breathLFO = ctx.createOscillator(); breathLFO.type = "sine"; breathLFO.frequency.value = 0.12;
-  const breathLFOG = ctx.createGain(); breathLFOG.gain.value = 0.012;
-  breathLFO.connect(breathLFOG); breathLFOG.connect(breath.gain.gain);
-  breathLFO.start(); nodes.push(breathLFO, breathLFOG);
-
-  // ── Tibetan bowl — low, resonant, every ~15s ──
-  function tibetanBowl() {
-    if (!audioCtxRef.current || audioCtxRef.current.state === "closed") return;
-    const freq = [174.61, 220, 261.63][Math.floor(Math.random() * 3)];
-    const osc = ctx.createOscillator(); osc.type = "sine"; osc.frequency.value = freq;
-    const osc2 = ctx.createOscillator(); osc2.type = "sine"; osc2.frequency.value = freq * 3.01;
-    const g = ctx.createGain(); const g2 = ctx.createGain();
-    g.gain.setValueAtTime(0, ctx.currentTime);
-    g.gain.linearRampToValueAtTime(0.02, ctx.currentTime + 1.5);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 9);
-    g2.gain.setValueAtTime(0, ctx.currentTime);
-    g2.gain.linearRampToValueAtTime(0.005, ctx.currentTime + 1);
-    g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 6);
-    osc.connect(g); g.connect(ctx.destination);
-    osc2.connect(g2); g2.connect(ctx.destination);
-    osc.start(); osc2.start();
-    osc.stop(ctx.currentTime + 10); osc2.stop(ctx.currentTime + 7);
-  }
-  tibetanBowl();
-  const bowlInt = setInterval(tibetanBowl, 12000 + Math.random() * 6000);
-  intervalsRef.current.push(bowlInt);
-
-  // ── Descending wind chime — gentle pentatonic descent every ~20s ──
-  function windChime() {
-    if (!audioCtxRef.current || audioCtxRef.current.state === "closed") return;
-    const scale = [523.25, 392.00, 329.63, 261.63, 196.00];
-    scale.forEach((f, i) => {
-      const t = ctx.currentTime + i * 0.8;
-      const osc = ctx.createOscillator(); osc.type = "sine"; osc.frequency.value = f;
-      const g = ctx.createGain();
-      g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(0.008, t + 0.3);
-      g.gain.exponentialRampToValueAtTime(0.001, t + 3.5);
-      osc.connect(g); g.connect(ctx.destination);
-      osc.start(t); osc.stop(t + 4);
-    });
-  }
-  const chimeInt = setInterval(windChime, 20000 + Math.random() * 8000);
-  intervalsRef.current.push(chimeInt);
-  setTimeout(windChime, 6000);
-
-  nodesRef.current = nodes;
-}
-
-function stopAmbient() {
-  intervalsRef.current.forEach(id => clearInterval(id));
-  intervalsRef.current = [];
-  nodesRef.current.forEach(n => { try { if (n.stop) n.stop(); else if (n.disconnect) n.disconnect(); } catch(e){} });
-  nodesRef.current = [];
-  if (audioCtxRef.current && audioCtxRef.current.state !== "closed") {
-    try { audioCtxRef.current.close(); } catch(e) {}
-  }
-  audioCtxRef.current = null;
-}
-
-// ─── DATA ───────────────────────────────────────────────────────────────────────
-const MORNING_STEPS = [
-  {id:"breathing",label:"01 — Priming Breath",title:"Box Breathing Sequence",subtitle:"Tony Robbins Priming — Breath of Fire",color:"#059669",isBreathing:true},
-  {id:"tm-meditation",label:"02 — TM Meditation",title:"Transcendental Meditation",subtitle:"20 minutes — effortless, silent, deep",color:"#8B5CF6",isTM:true},
-  {id:"gratitude",label:"03 — Gratitude",title:"3 Moments of Deep Gratitude",subtitle:"Feel it fully — not just think it",color:"#0891B2",
-    prompts:["Think of something simple — a moment, a person, a sensation. Let your body feel it.","Now something in your work — a patient helped, a breakthrough, a skill earned.","Finally, something about who you ARE becoming. See it. Feel it already real."]},
-  {id:"healing",label:"04 — Energy & Healing",title:"Healing Visualization",subtitle:"Feel the energy move through you",color:"#0E7490",
-    prompts:["Close your eyes. Visualize a brilliant white light entering through the crown of your head.","Feel it filling your chest — your heart, your lungs, your nervous system lighting up.","On every exhale, release what doesn't serve you. Tension, fear, noise. Let it go.","You are a biological practitioner. Your body is your instrument. Calibrate it now."]},
-  {id:"wins",label:"05 — Future Wins",title:"3 Wins from the Future",subtitle:"Live into them NOW — past tense, present feeling",color:"#047857",
-    prompts:['WIN 1 — Your body: "I showed up strong today. I trained, I fueled, I recovered. My vitality is non-negotiable."','WIN 2 — Your family: "I was present. I led with warmth and strength. My marriage deepened. My kids felt my love."','WIN 3 — Your practice: "I moved PJN forward today. I led clearly, acted decisively, and created something that matters."']},
-  {id:"identity",label:"06 — Identity Lock",title:"Who You Are",subtitle:"Say it. Mean it. Become it.",color:"#1D4ED8",
-    prompts:["I am a biological healer. I see what others miss and I treat the whole person.","I am a decisive leader. My team follows because I lead with clarity and calm.","I am a present husband and father. My family is my foundation.","I am Pascal 2.0 — building a legacy practice, a healthy body, and a life by design."]},
-  {id:"lifebook",label:"07 — Lifebook Vision",title:"Your Lifebook Reminder",subtitle:"Who you are becoming across every dimension",color:"#7C3AED",lifebook:true},
-  {id:"wins3",label:"08 — Today's 3 Wins",title:"What Makes Today a Win",subtitle:"Name your targets before the day names them for you",color:"#B45309",todayWins:true},
-  {id:"priorities",label:"09 — Strategic Builder",title:"Needle Movers vs. Noise",subtitle:"One question: what actually matters today?",color:"#0F766E",priorities:true},
-  {id:"polarity",label:"10 — Polarity Principles",title:"Your Frame",subtitle:"Hold it all day. No exceptions.",color:"#BE123C",
-    principles:[{icon:"\u26A1",text:"Lead calmly",sub:"Regulate first. Respond from strength, not reaction."},{icon:"\uD83C\uDFAF",text:"Decide and act",sub:"Imperfect action beats perfect analysis. Move."},{icon:"\uD83D\uDD07",text:"Do not over-explain",sub:"Say it once. Clearly. Then let it land."},{icon:"\uD83E\uDDF1",text:"Hold frame",sub:"Your certainty is contagious. Chaos cannot enter a held frame."}]},
-  {id:"health",label:"11 — Health Stack",title:"Daily Health Practices",subtitle:"Check them off. Non-negotiable.",color:"#059669",health:true},
-  {id:"content",label:"12 — Content Creation",title:"What Will You Create Today?",subtitle:"Your audience is waiting for your knowledge",color:"#0369A1",contentQ:true},
-  {id:"strategic",label:"13 — Pascal 2.0 Question",title:"Your Strategic Question",subtitle:"One question. Sit with it.",color:"#7C3AED",strategic:true},
-];
-
-const EVENING_STEPS = [
-  {id:"e-breathing",label:"01 — Downshift",title:"Nervous System Downshift",subtitle:"Shift from sympathetic to parasympathetic — calm the system",color:"#4ADE80",isEveningBreathing:true},
-  {id:"e-tm-meditation",label:"02 — TM Meditation",title:"Evening TM Session",subtitle:"20 minutes — release the day, go inward",color:"#A78BFA",isTM:true},
-  {id:"e-wins",label:"03 — Win Review",title:"Daily Win Review",subtitle:"What made today a win?",color:"#FBBF24",eveningWins:true},
-  {id:"e-release",label:"04 — Release",title:"Release the Mental Load",subtitle:"Get it out of your head and onto the page",color:"#94A3B8",mentalRelease:true},
-  {id:"e-tomorrow",label:"05 — Rule of 3",title:"Tomorrow's Rule of 3",subtitle:"Choose three actions that would make tomorrow successful",color:"#34D399",tomorrowRule:true},
-  {id:"e-relationship",label:"06 — Relationship",title:"Relationship Ritual",subtitle:"Small consistent deposits strengthen everything",color:"#FB7185",relationship:true},
-  {id:"e-identity",label:"07 — Identity Lock",title:"Evening Identity Lock",subtitle:"Anchor who you are before you sleep",color:"#A78BFA",eveningIdentity:true},
-];
-
-const HEALTH_ITEMS = [{id:"workout",label:"Workout",icon:"\uD83C\uDFCB\uFE0F"},{id:"sauna",label:"Sauna + Cold Plunge",icon:"\uD83E\uDDCA"},{id:"meditation",label:"Meditation (2\u00D7)",icon:"\uD83E\uDDD8"},{id:"pemf",label:"PEMF / Vagal Stimulation",icon:"\u26A1"},{id:"nutrition",label:"Nutrition & Hydration",icon:"\uD83E\uDD57"}];
-const LIFEBOOK_DIMS = [{dim:"Body & Vitality",vision:"Peak biological performance — you practice what you preach. Strength, recovery, and longevity are daily disciplines."},{dim:"Mind & Psychology",vision:"Calm clarity under pressure. You are a student of self-mastery. Your mindset is your greatest clinical tool."},{dim:"Relationships",vision:"A marriage of depth and polarity. A father whose presence shapes lives. A leader who inspires loyalty."},{dim:"Career & Mission",vision:"PJN is the most trusted biological dental practice in your region — and eventually, a model for the nation."},{dim:"Finances",vision:"Financial freedom through a practice that runs like clockwork, generating wealth with or without you in the chair."},{dim:"Spiritual Life",vision:"A life of meaning, rootedness, and integrity. Aligned in body, mind, and spirit."}];
-const STRATEGIC_QUESTIONS = ["If Pascal 2.0 made one decision today that his current self is avoiding — what would that decision be?","What belief about yourself is still running your practice that no longer belongs in your story?","Where are you the bottleneck, and what does it cost your family, your team, and your patients?","What would you build today if you knew your practice would be studied as a case study in 10 years?","Who in your life deserves a deeper, more present version of you — and what\u2019s one concrete action that delivers that today?"];
-const QUOTES_MORNING = [{text:"The quality of your life is the quality of your rituals.",author:"Tony Robbins"},{text:"We are what we repeatedly do. Excellence, then, is not an act, but a habit.",author:"Aristotle"},{text:"Discipline equals freedom.",author:"Jocko Willink"},{text:"You do not rise to the level of your goals. You fall to the level of your systems.",author:"James Clear"}];
-const QUOTES_EVENING = [{text:"Almost everything will work again if you unplug it for a few minutes, including you.",author:"Anne Lamott"},{text:"The best bridge between despair and hope is a good night\u2019s sleep.",author:"E. Joseph Cossman"},{text:"Finish each day and be done with it. Tomorrow is a new day.",author:"Ralph Waldo Emerson"},{text:"Rest is not idleness. It is the cultivation of strength.",author:"John Lubbock"}];
-
-// ─── AURORA BACKGROUND (Evening) ────────────────────────────────────────────────
-function AuroraBackground() {
-  return React.createElement("div",{style:{position:"fixed",inset:0,pointerEvents:"none",zIndex:0,overflow:"hidden",background:"#060A08"}},
-    React.createElement("div",{style:{position:"absolute",top:"-40%",left:"-20%",width:"140%",height:"80%",
-      background:"radial-gradient(ellipse at 30% 50%, rgba(74,222,128,0.15), transparent 60%)",
-      animation:"aurora1 20s ease-in-out infinite",filter:"blur(60px)"}}),
-    React.createElement("div",{style:{position:"absolute",top:"-30%",left:"10%",width:"120%",height:"70%",
-      background:"radial-gradient(ellipse at 60% 40%, rgba(52,211,153,0.12), transparent 55%)",
-      animation:"aurora2 25s ease-in-out infinite",filter:"blur(70px)"}}),
-    React.createElement("div",{style:{position:"absolute",top:"-50%",left:"-10%",width:"130%",height:"90%",
-      background:"radial-gradient(ellipse at 50% 60%, rgba(16,185,129,0.08), transparent 50%)",
-      animation:"aurora3 18s ease-in-out infinite",filter:"blur(80px)"}}),
-    // Subtle teal accent
-    React.createElement("div",{style:{position:"absolute",top:"-20%",right:"-15%",width:"60%",height:"60%",
-      background:"radial-gradient(ellipse, rgba(6,182,212,0.06), transparent 60%)",
-      animation:"aurora2 22s ease-in-out infinite 5s",filter:"blur(90px)"}}),
-    // Stars
-    React.createElement("div",{style:{position:"absolute",inset:0,
-      background:"radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.3), transparent), radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,0.2), transparent), radial-gradient(1px 1px at 60% 20%, rgba(255,255,255,0.25), transparent), radial-gradient(1px 1px at 80% 50%, rgba(255,255,255,0.15), transparent), radial-gradient(1px 1px at 10% 80%, rgba(255,255,255,0.2), transparent), radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.18), transparent), radial-gradient(1px 1px at 50% 90%, rgba(255,255,255,0.22), transparent), radial-gradient(1px 1px at 70% 40%, rgba(255,255,255,0.12), transparent), radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,0.2), transparent), radial-gradient(1px 1px at 85% 75%, rgba(255,255,255,0.15), transparent)"}}));
-}
-
-// ─── MORNING AMBIENT GLOW ───────────────────────────────────────────────────────
-function MorningGlow({color}){const rgb=hexToRgb(color);
-  return React.createElement("div",{style:{position:"fixed",inset:0,pointerEvents:"none",zIndex:0,overflow:"hidden"}},
-    React.createElement("div",{style:{position:"absolute",top:"-20%",right:"-10%",width:500,height:500,borderRadius:"50%",background:`radial-gradient(circle,rgba(${rgb},0.08),transparent 70%)`,animation:"mp-glow 8s ease-in-out infinite",filter:"blur(80px)"}}),
-    React.createElement("div",{style:{position:"absolute",bottom:"-15%",left:"-10%",width:400,height:400,borderRadius:"50%",background:`radial-gradient(circle,rgba(${rgb},0.05),transparent 70%)`,animation:"mp-glow 10s ease-in-out infinite 3s",filter:"blur(100px)"}}));}
-
-// ─── BREATHING CIRCLES ──────────────────────────────────────────────────────────
-function BreathingCircle({clr,phases,totalRounds,roundLabel,completeMsg}) {
-  const [phase,setPhase]=useState("ready"); const [count,setCount]=useState(0); const [round,setRound]=useState(0);
-  const [active,setActive]=useState(false); const [elapsed,setElapsed]=useState(0);
-  const timerRef=useRef(null); const elapsedRef=useRef(null);
-  useEffect(()=>{
-    if(!active)return;
-    let phaseIdx=0,tick=0; setPhase(phases[0].name);setCount(phases[0].duration);setElapsed(0);
-    elapsedRef.current=setInterval(()=>setElapsed(e=>e+1),1000);
-    timerRef.current=setInterval(()=>{tick++;const dur=phases[phaseIdx].duration;
-      const remaining=dur-(tick%dur===0?dur:tick%dur);setCount(remaining===dur?dur:remaining);
-      if(tick%dur===0){
-        phaseIdx=(phaseIdx+1)%phases.length;
-        if(phaseIdx===0)setRound(r=>{if(r+1>=totalRounds){clearInterval(timerRef.current);clearInterval(elapsedRef.current);setActive(false);setPhase("complete");return totalRounds;}return r+1;});
-        setPhase(phases[phaseIdx].name);setCount(phases[phaseIdx].duration);}
-    },1000);
-    return()=>{clearInterval(timerRef.current);clearInterval(elapsedRef.current);};
-  },[active]);
-  const currentPhase=phases.find(p=>p.name===phase)||phases[0];
-  const scale=phase==="Inhale"?1.3:phase==="Exhale"?0.78:1.05;
-  const rgb=hexToRgb(clr);
-  return React.createElement("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",gap:28}},
-    React.createElement("div",{style:{position:"relative",width:220,height:220}},
-      active&&phase!=="complete"&&React.createElement(React.Fragment,null,
-        React.createElement("div",{style:{position:"absolute",inset:-20,borderRadius:"50%",border:`1px solid rgba(${rgb},0.35)`,animation:"mp-pulse-ring 2.5s ease-in-out infinite"}}),
-        React.createElement("div",{style:{position:"absolute",inset:-40,borderRadius:"50%",border:`1px solid rgba(${rgb},0.15)`,animation:"mp-pulse-ring 2.5s ease-in-out infinite 0.7s"}})),
-      React.createElement("div",{style:{width:220,height:220,borderRadius:"50%",background:`radial-gradient(circle,rgba(${rgb},${active?0.2:0.08}),rgba(${rgb},0.02))`,border:`2px solid rgba(${rgb},${active?0.6:0.3})`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",transform:active?`scale(${scale})`:"scale(1)",transition:"transform 1.2s cubic-bezier(0.4,0,0.2,1),background 0.5s",boxShadow:active?`0 0 50px rgba(${rgb},0.15)`:`0 0 20px rgba(${rgb},0.05)`}},
-        React.createElement("div",{style:{fontSize:42,fontWeight:800,color:clr,fontFamily:"Georgia,serif"}},phase==="complete"?"\u2713":active?count:"\u25CB"),
-        React.createElement("div",{style:{fontSize:12,color:"inherit",letterSpacing:3,textTransform:"uppercase",marginTop:6,opacity:0.6}},phase==="ready"?"Ready":phase==="complete"?"Complete":phase))),
-    active&&phase!=="complete"&&React.createElement("div",{style:{textAlign:"center",animation:"mp-fadeSlideIn 0.4s ease"}},
-      React.createElement("div",{style:{fontSize:15,fontStyle:"italic",opacity:0.8}},currentPhase.instruction),
-      React.createElement("div",{style:{display:"flex",gap:16,justifyContent:"center",marginTop:10,opacity:0.5}},
-        React.createElement("span",{style:{fontSize:12}},`${roundLabel} ${round+1} / ${totalRounds}`),
-        React.createElement("span",{style:{fontSize:12}},"\u00B7"),
-        React.createElement("span",{style:{fontSize:12}},formatTime(elapsed))),
-      React.createElement("div",{style:{display:"flex",gap:8,justifyContent:"center",marginTop:12}},
-        phases.map((p,i)=>React.createElement("div",{key:i,style:{width:p.name===phase?18:8,height:8,borderRadius:4,background:p.name===phase?clr:`rgba(${rgb},0.2)`,transition:"all 0.3s"}})))),
-    phase==="complete"&&React.createElement("div",{style:{textAlign:"center",animation:"mp-fadeSlideIn 0.5s ease"}},
-      React.createElement("div",{style:{color:clr,fontSize:14,letterSpacing:2,textTransform:"uppercase"}},completeMsg),
-      React.createElement("div",{style:{opacity:0.5,fontSize:12,marginTop:6}},formatTime(elapsed)+" total")),
-    !active&&phase!=="complete"&&React.createElement("button",{onClick:()=>{setActive(true);setRound(0);},style:{background:`rgba(${rgb},0.1)`,border:`1px solid rgba(${rgb},0.4)`,color:clr,padding:"12px 32px",borderRadius:8,cursor:"pointer",letterSpacing:3,textTransform:"uppercase",fontSize:12,fontWeight:600,transition:"all 0.2s"}},"Begin"),
-    active&&phase!=="complete"&&React.createElement("button",{onClick:()=>{clearInterval(timerRef.current);clearInterval(elapsedRef.current);setActive(false);setPhase("ready");setRound(0);},style:{background:"transparent",border:"1px solid rgba(128,128,128,0.2)",padding:"8px 20px",borderRadius:6,cursor:"pointer",fontSize:11,letterSpacing:2,textTransform:"uppercase",opacity:0.5}},"Reset"));
-}
-
-// ─── TM MEDITATION TIMER ────────────────────────────────────────────────────────
-function TMTimer({th}) {
-  const TOTAL_SEC = 20 * 60;
-  const [phase,setPhase] = useState("pre"); // pre | active | paused | post
-  const [remaining,setRemaining] = useState(TOTAL_SEC);
-  const [elapsed,setElapsed] = useState(0);
-  const timerRef = useRef(null);
-  const audioCtxRef = useRef(null);
-
-  const playChime = useCallback(() => {
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      audioCtxRef.current = ctx;
-      const playTone = (freq, start, dur) => {
-        const osc = ctx.createOscillator(); const gain = ctx.createGain();
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.type = "sine"; osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0, ctx.currentTime + start);
-        gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + start + 0.3);
-        gain.gain.linearRampToValueAtTime(0, ctx.currentTime + start + dur);
-        osc.start(ctx.currentTime + start); osc.stop(ctx.currentTime + start + dur);
-      };
-      playTone(528, 0, 3); playTone(639, 1.2, 2.5); playTone(741, 2.4, 2);
-    } catch(e) {}
-  }, []);
-
-  useEffect(() => {
-    if (phase === "active") {
-      timerRef.current = setInterval(() => {
-        setRemaining(r => {
-          if (r <= 1) {
-            clearInterval(timerRef.current);
-            setPhase("post");
-            playChime();
-            return 0;
-          }
-          return r - 1;
-        });
-        setElapsed(e => e + 1);
-      }, 1000);
-      return () => clearInterval(timerRef.current);
-    }
-  }, [phase, playChime]);
-
-  useEffect(() => () => { clearInterval(timerRef.current); }, []);
-
-  const pct = ((TOTAL_SEC - remaining) / TOTAL_SEC) * 100;
-  const mins = Math.floor(remaining / 60);
-  const secs = remaining % 60;
-  const timeStr = `${mins}:${secs < 10 ? "0" : ""}${secs}`;
-  const rgb = "139,92,246";
-
-  if (phase === "pre") {
-    return React.createElement("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",gap:28,maxWidth:500}},
-      React.createElement("div",{style:{padding:"28px 32px",background:th.cardBg,border:"1px solid rgba(139,92,246,0.15)",borderRadius:12,boxShadow:th.shadow,width:"100%"}},
-        React.createElement("div",{style:{fontSize:11,color:"#8B5CF6",letterSpacing:3,textTransform:"uppercase",marginBottom:16,fontWeight:600,textAlign:"center"}},"Before You Begin"),
-        React.createElement("div",{style:{fontSize:15,color:th.body,lineHeight:1.9,textAlign:"center"}},"Close your eyes. Settle in. Let your body relax completely."),
-        React.createElement("div",{style:{fontSize:15,color:th.body,lineHeight:1.9,textAlign:"center",marginTop:8}},"When ready, begin your mantra effortlessly."),
-        React.createElement("div",{style:{fontSize:13,color:th.muted,fontStyle:"italic",textAlign:"center",marginTop:16}},"Do not concentrate. Do not force. Let thoughts come and go.")),
-      React.createElement("button",{onClick:()=>setPhase("active"),style:{background:"rgba(139,92,246,0.1)",border:"1px solid rgba(139,92,246,0.4)",color:"#8B5CF6",padding:"14px 40px",borderRadius:8,cursor:"pointer",letterSpacing:3,textTransform:"uppercase",fontSize:13,fontWeight:600,transition:"all 0.2s"}},"Begin Meditation"));
-  }
-
-  if (phase === "post") {
-    return React.createElement("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",gap:28,maxWidth:500,animation:"mp-fadeSlideIn 0.6s ease"}},
-      React.createElement("div",{style:{fontSize:48,animation:"mp-float 3s ease-in-out infinite"}},"\uD83D\uDE4F"),
-      React.createElement("div",{style:{padding:"28px 32px",background:th.cardBg,border:"1px solid rgba(139,92,246,0.15)",borderRadius:12,boxShadow:th.shadow,width:"100%"}},
-        React.createElement("div",{style:{fontSize:11,color:"#8B5CF6",letterSpacing:3,textTransform:"uppercase",marginBottom:16,fontWeight:600,textAlign:"center"}},"Meditation Complete"),
-        React.createElement("div",{style:{fontSize:15,color:th.body,lineHeight:1.9,textAlign:"center"}},"Keep your eyes closed for 2 more minutes."),
-        React.createElement("div",{style:{fontSize:15,color:th.body,lineHeight:1.9,textAlign:"center",marginTop:8}},"Let awareness return gradually. There is no rush."),
-        React.createElement("div",{style:{fontSize:13,color:th.muted,fontStyle:"italic",textAlign:"center",marginTop:16}},"How do you feel? Notice the stillness.")),
-      React.createElement("div",{style:{fontSize:12,color:th.faint,letterSpacing:2}},formatTime(TOTAL_SEC) + " \u00B7 Session complete"));
-  }
-
-  // Active / Paused
-  const circumference = 2 * Math.PI * 96;
-  const strokeOffset = circumference - (pct / 100) * circumference;
-  return React.createElement("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",gap:28}},
-    React.createElement("div",{style:{position:"relative",width:220,height:220}},
-      phase==="active"&&React.createElement(React.Fragment,null,
-        React.createElement("div",{style:{position:"absolute",inset:-20,borderRadius:"50%",border:"1px solid rgba(139,92,246,0.25)",animation:"mp-pulse-ring 3.5s ease-in-out infinite"}}),
-        React.createElement("div",{style:{position:"absolute",inset:-40,borderRadius:"50%",border:"1px solid rgba(139,92,246,0.1)",animation:"mp-pulse-ring 3.5s ease-in-out infinite 1s"}})),
-      React.createElement("svg",{width:220,height:220,style:{position:"absolute",transform:"rotate(-90deg)"}},
-        React.createElement("circle",{cx:110,cy:110,r:96,fill:"none",stroke:"rgba(139,92,246,0.08)",strokeWidth:3}),
-        React.createElement("circle",{cx:110,cy:110,r:96,fill:"none",stroke:"#8B5CF6",strokeWidth:3,strokeDasharray:circumference,strokeDashoffset:strokeOffset,strokeLinecap:"round",style:{transition:"stroke-dashoffset 1s linear"}})),
-      React.createElement("div",{style:{width:220,height:220,borderRadius:"50%",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",position:"relative"}},
-        React.createElement("div",{style:{fontSize:38,fontWeight:700,color:"#8B5CF6",fontFamily:"Georgia,serif",letterSpacing:2}},timeStr),
-        React.createElement("div",{style:{fontSize:11,color:th.muted,letterSpacing:3,textTransform:"uppercase",marginTop:8}},phase==="active"?"Meditating":"Paused"))),
-    React.createElement("div",{style:{fontSize:13,color:th.muted,fontStyle:"italic",textAlign:"center",maxWidth:400}},"Let thoughts come and go. Return to the mantra effortlessly."),
-    React.createElement("div",{style:{display:"flex",gap:12}},
-      React.createElement("button",{onClick:()=>{if(phase==="active"){clearInterval(timerRef.current);setPhase("paused");}else{setPhase("active");}},style:{background:"rgba(139,92,246,0.1)",border:"1px solid rgba(139,92,246,0.3)",color:"#8B5CF6",padding:"10px 28px",borderRadius:8,cursor:"pointer",fontSize:12,letterSpacing:2,textTransform:"uppercase"}},phase==="active"?"Pause":"Resume"),
-      React.createElement("button",{onClick:()=>{clearInterval(timerRef.current);setPhase("post");playChime();},style:{background:"transparent",border:"1px solid rgba(128,128,128,0.2)",padding:"10px 28px",borderRadius:8,cursor:"pointer",fontSize:12,letterSpacing:2,textTransform:"uppercase",color:th.faint}},"End Early")));
-}
-
-// ─── SIDEBAR ────────────────────────────────────────────────────────────────────
-function SidebarComp({steps,currentStep,onSelect,completedSteps,T:th}){
-  return React.createElement("div",{style:{width:240,minWidth:240,borderRight:`1px solid ${th.border}`,padding:"20px 0",overflowY:"auto",display:"flex",flexDirection:"column",background:th.sidebarBg}},
-    React.createElement("div",{style:{padding:"0 20px 16px",fontSize:10,letterSpacing:4,color:th.faint,textTransform:"uppercase",borderBottom:`1px solid ${th.border}`,marginBottom:8}},"Protocol Steps"),
-    steps.map((s,i)=>{const isActive=i===currentStep,isDone=completedSteps.has(i);
-      return React.createElement("div",{key:s.id,className:th.sidebarClass,onClick:()=>onSelect(i),style:{padding:"10px 20px",cursor:"pointer",display:"flex",alignItems:"center",gap:12,background:isActive?`rgba(${hexToRgb(s.color)},0.1)`:"transparent",borderLeft:isActive?`3px solid ${s.color}`:"3px solid transparent",transition:"all 0.2s"}},
-        React.createElement("div",{style:{width:22,height:22,borderRadius:"50%",flexShrink:0,border:`1.5px solid ${isDone?s.color:isActive?s.color:th.faint+"55"}`,background:isDone?`rgba(${hexToRgb(s.color)},0.15)`:"transparent",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,color:isDone?s.color:isActive?s.color:th.faint,fontWeight:700}},isDone?"\u2713":(i+1)),
-        React.createElement("div",{style:{fontSize:12,color:isActive?th.heading:isDone?th.muted:th.faint,letterSpacing:0.5}},s.title.length>22?s.title.slice(0,22)+"\u2026":s.title));
-    }));}
-
-// ─── COMPLETION ─────────────────────────────────────────────────────────────────
-function CompletionScreen({data,elapsed,onReset,onHome,mode}){
-  const th=THEMES[mode]; const quotes=mode==="morning"?QUOTES_MORNING:QUOTES_EVENING;
-  const [q]=useState(()=>quotes[Math.floor(Math.random()*quotes.length)]);
-  const steps=mode==="morning"?MORNING_STEPS:EVENING_STEPS; const isMorning=mode==="morning";
-  const sections=[];
-  if(data.win1||data.win2||data.win3)sections.push({title:"Today's Wins",color:"#B45309",items:[data.win1&&{label:"Health",text:data.win1},data.win2&&{label:"Family",text:data.win2},data.win3&&{label:"PJN",text:data.win3}].filter(Boolean)});
-  if(data.needleInput)sections.push({title:"Needle Mover",color:"#0F766E",items:[{label:"Priority",text:data.needleInput}]});
-  if(data.delegateInput)sections.push({title:"Delegated",color:th.muted,items:[{label:"Off Plate",text:data.delegateInput}]});
-  const healthDone=Object.entries(data.health||{}).filter(([,v])=>v);
-  if(healthDone.length>0)sections.push({title:"Health Stack",color:"#059669",items:healthDone.map(([id])=>{const it=HEALTH_ITEMS.find(h=>h.id===id);return{label:it?.icon||"",text:it?.label||id};})});
-  if(data.contentInput)sections.push({title:"Content Plan",color:"#0369A1",items:[{label:"Creating",text:data.contentInput}]});
-  if(data.eveningWinText)sections.push({title:"Today's Win",color:"#FBBF24",items:[{label:"\u2B50",text:data.eveningWinText}]});
-  if(data.mentalDump)sections.push({title:"Released",color:th.muted,items:[{label:"\uD83D\uDCDD",text:data.mentalDump}]});
-  if(data.tom1||data.tom2||data.tom3)sections.push({title:"Tomorrow's 3",color:"#34D399",items:[data.tom1&&{label:"1",text:data.tom1},data.tom2&&{label:"2",text:data.tom2},data.tom3&&{label:"3",text:data.tom3}].filter(Boolean)});
-  if(data.relationshipNote)sections.push({title:"Relationship",color:"#FB7185",items:[{label:"\u2764\uFE0F",text:data.relationshipNote}]});
-  return React.createElement("div",{style:{position:"fixed",inset:0,background:th.completionBg,zIndex:100,display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto",padding:"48px 24px",animation:"mp-completionFade 0.6s ease",color:th.heading}},
-    !isMorning&&React.createElement(AuroraBackground),
-    React.createElement("div",{style:{maxWidth:600,width:"100%",display:"flex",flexDirection:"column",gap:32,position:"relative",zIndex:5}},
-      React.createElement("div",{style:{textAlign:"center"}},
-        React.createElement("div",{style:{fontSize:56,marginBottom:16}},isMorning?"\uD83D\uDD12":"\uD83C\uDF19"),
-        React.createElement("div",{style:{fontSize:32,fontWeight:700,fontFamily:"Georgia,serif"}},isMorning?"Protocol Complete.":"Day Closed."),
-        React.createElement("div",{style:{fontSize:16,color:th.muted,fontStyle:"italic",marginTop:8,lineHeight:1.7}},isMorning?"You are no longer preparing for the day. You are the day.":"Your mind is clear. Your body is ready to recover. Tomorrow is already designed."),
-        React.createElement("div",{style:{fontSize:13,letterSpacing:3,color:isMorning?"#059669":"#4ADE80",textTransform:"uppercase",marginTop:12}},`${formatTime(elapsed)} \u00B7 ${steps.length} Steps \u00B7 Locked In`)),
-      sections.length>0&&React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:16}},
-        React.createElement("div",{style:{fontSize:11,letterSpacing:4,color:th.faint,textTransform:"uppercase",textAlign:"center"}},"Session Summary"),
-        sections.map((sec,si)=>React.createElement("div",{key:si,style:{padding:"20px 24px",background:th.cardBg,border:`1px solid rgba(${hexToRgb(sec.color)},0.2)`,borderLeft:`3px solid ${sec.color}`,borderRadius:8,animation:`mp-fadeSlideIn 0.5s ease ${si*0.1}s both`,boxShadow:th.shadow}},
-          React.createElement("div",{style:{fontSize:11,color:sec.color,letterSpacing:2,textTransform:"uppercase",marginBottom:12,fontWeight:600}},sec.title),
-          sec.items.map((item,ii)=>React.createElement("div",{key:ii,style:{marginBottom:ii<sec.items.length-1?10:0}},
-            React.createElement("span",{style:{fontSize:11,color:th.muted,marginRight:8}},item.label),
-            React.createElement("span",{style:{fontSize:14,color:th.body}},item.text)))))),
-      React.createElement("div",{style:{textAlign:"center",padding:"24px 32px",background:th.cardBg,borderRadius:8,border:`1px solid ${th.border}`,boxShadow:th.shadow}},
-        React.createElement("div",{style:{fontSize:15,color:th.muted,fontStyle:"italic",lineHeight:1.8}},`\u201C${q.text}\u201D`),
-        React.createElement("div",{style:{fontSize:12,color:th.faint,marginTop:8,letterSpacing:1}},`\u2014 ${q.author}`)),
-      React.createElement("div",{style:{display:"flex",gap:12,justifyContent:"center",paddingBottom:48,flexWrap:"wrap"}},
-        React.createElement("button",{onClick:onHome,style:{background:"transparent",border:`1px solid ${th.border}`,color:th.muted,padding:"12px 28px",borderRadius:8,cursor:"pointer",fontSize:12,letterSpacing:2,textTransform:"uppercase"}},"\u2190 Home"),
-        React.createElement("button",{onClick:onReset,style:{background:"transparent",border:`1px solid ${th.border}`,color:th.muted,padding:"12px 28px",borderRadius:8,cursor:"pointer",fontSize:12,letterSpacing:2,textTransform:"uppercase"}},"Run Again"),
-        React.createElement("div",{style:{background:isMorning?"linear-gradient(135deg,#059669,#047857)":"linear-gradient(135deg,#4ADE80,#059669)",padding:"12px 28px",borderRadius:8,fontSize:12,letterSpacing:2,textTransform:"uppercase",fontWeight:700,color:isMorning?"#fff":"#060A08"}},isMorning?"Go Be Pascal 2.0":"Rest Well, Pascal"))));}
-
-// ─── TEXTAREA ───────────────────────────────────────────────────────────────────
-function TA({val,setVal,placeholder,borderColor,minH,th}){
-  return React.createElement("textarea",{value:val,onChange:e=>setVal(e.target.value),placeholder,style:{
-    background:th.inputBg,border:`1px solid ${borderColor||th.inputBorder}`,borderRadius:8,padding:"14px 18px",
-    color:th.heading,fontSize:14,resize:"none",minHeight:minH||80,outline:"none",fontFamily:"Georgia,serif",
-    transition:"border-color 0.3s,box-shadow 0.3s",lineHeight:1.6,width:"100%",boxSizing:"border-box"}});}
-
-// ─── SOUND TOGGLE ───────────────────────────────────────────────────────────────
-function SoundToggle({mode,playing,onToggle}){
-  return React.createElement("button",{onClick:onToggle,title:playing?"Mute ambient sounds":"Play ambient sounds",
-    style:{background:"transparent",border:"1px solid "+(mode==="morning"?"rgba(0,60,30,0.12)":"rgba(74,222,128,0.15)"),
-      color:mode==="morning"?"#4D7160":"#6A9E7A",padding:"6px 12px",borderRadius:4,cursor:"pointer",fontSize:13,lineHeight:1,display:"flex",alignItems:"center",gap:6}},
-    playing?"\uD83D\uDD0A":"\uD83D\uDD07",
-    React.createElement("span",{style:{fontSize:10,letterSpacing:1,textTransform:"uppercase"}},playing?"On":"Off"));}
-
-// ─── LOCAL PROGRESS + COMMERCIALIZATION LAYER ──────────────────────────────────
-const STORAGE_KEY = "lex-pjn-progress-v1";
-function readProgress(){
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {sessions:0,streak:0,lastDate:null,lastMode:null}; }
-  catch(e){ return {sessions:0,streak:0,lastDate:null,lastMode:null}; }
-}
-function todayKey(){ return new Date().toISOString().slice(0,10); }
-function yesterdayKey(){ const d=new Date(); d.setDate(d.getDate()-1); return d.toISOString().slice(0,10); }
-function saveSession(mode){
-  const p=readProgress(); const t=todayKey();
-  const alreadyToday=p.lastDate===t;
-  const next={...p,sessions:(p.sessions||0)+1,lastDate:t,lastMode:mode,lastCompletedAt:new Date().toISOString()};
-  next.streak=alreadyToday?(p.streak||1):(p.lastDate===yesterdayKey()?((p.streak||0)+1):1);
-  localStorage.setItem(STORAGE_KEY,JSON.stringify(next));
-  return next;
-}
-function CommercialPanel(){
-  return React.createElement("div",{style:{marginTop:28,maxWidth:760,width:"100%",display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:14}},
-    [
-      {k:"Private beta",v:"Built for Pascal first",d:"No account. No cloud sync. Your reflections stay on this device."},
-      {k:"Start Here",v:"Morning + evening protocol",d:"Use the suggested card, finish one full session, then repeat daily."},
-      {k:"Waitlist path",v:"Launch pending approval",d:"Payment, public name, privacy, and terms stay blocked until Pascal approves."}
-    ].map((x,i)=>React.createElement("div",{key:i,style:{padding:"18px 20px",borderRadius:14,background:i===1?"rgba(255,255,255,0.82)":"rgba(255,255,255,0.58)",border:"1px solid rgba(0,60,30,0.1)",boxShadow:"0 4px 20px rgba(0,40,20,0.06)"}},
-      React.createElement("div",{style:{fontSize:10,letterSpacing:3,textTransform:"uppercase",color:"#059669",marginBottom:8,fontWeight:700}},x.k),
-      React.createElement("div",{style:{fontSize:17,color:"#1A3328",fontWeight:700,marginBottom:6}},x.v),
-      React.createElement("div",{style:{fontSize:12,color:"#4D7160",lineHeight:1.65}},x.d))));
-}
-function ProgressPanel(){
-  const [p,setP]=useState(readProgress);
-  useEffect(()=>{const h=()=>setP(readProgress()); window.addEventListener("storage",h); return()=>window.removeEventListener("storage",h);},[]);
-  return React.createElement("div",{style:{marginTop:22,display:"flex",gap:12,flexWrap:"wrap",justifyContent:"center"}},
-    [["Sessions",p.sessions||0],["Streak",`${p.streak||0} day${(p.streak||0)===1?"":"s"}`],["Last",p.lastMode?`${p.lastMode} · ${p.lastDate}`:"Not started"]].map(([label,val])=>
-      React.createElement("div",{key:label,style:{minWidth:120,padding:"12px 16px",borderRadius:12,background:"rgba(255,255,255,0.55)",border:"1px solid rgba(0,60,30,0.08)",textAlign:"center"}},
-        React.createElement("div",{style:{fontSize:10,letterSpacing:2,textTransform:"uppercase",color:"#7A9E8C",marginBottom:4}},label),
-        React.createElement("div",{style:{fontSize:15,color:"#1A3328",fontWeight:700}},val))));
-}
-
-// ─── HOME SCREEN ────────────────────────────────────────────────────────────────
-function HomeScreen({onSelect}){
-  const hour=new Date().getHours();const suggested=(hour>=5&&hour<14)?"morning":"evening";
-  return React.createElement("div",{style:{minHeight:"100vh",background:"linear-gradient(170deg, #D6E4DB 0%, #C2D4C8 40%, #1A2E22 60%, #060A08 100%)",fontFamily:"'Georgia',serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:32,animation:"mp-fadeIn 0.6s ease"}},
-    React.createElement("div",{style:{textAlign:"center",marginBottom:48}},
-      React.createElement("div",{style:{fontSize:10,letterSpacing:6,color:"#7A9E8C",textTransform:"uppercase",marginBottom:12}},"Lex \u00B7 PJN"),
-      React.createElement("div",{style:{fontSize:38,fontWeight:700,color:"#1A3328",lineHeight:1.3}},`${getGreeting()}, Pascal`),
-      React.createElement("div",{style:{fontSize:15,color:"#4D7160",marginTop:12,fontStyle:"italic"}},formatDate()),
-      React.createElement("div",{style:{fontSize:13,color:"#2A4A3C",marginTop:16,lineHeight:1.7,maxWidth:620}},"A private daily priming system for high-performance biological practice leadership. Start with one complete protocol; the app tracks your local streak on this device only."),
-      React.createElement(ProgressPanel)),
-    React.createElement("div",{style:{display:"flex",gap:24,maxWidth:700,width:"100%",flexWrap:"wrap",justifyContent:"center"}},
-      // Morning
-      React.createElement("div",{className:"mp-home-card",onClick:()=>onSelect("morning"),style:{flex:"1 1 280px",maxWidth:320,padding:"36px 32px",borderRadius:16,cursor:"pointer",background:"rgba(255,255,255,0.75)",border:suggested==="morning"?"2px solid rgba(5,150,105,0.4)":"1px solid rgba(0,60,30,0.1)",transition:"all 0.3s",position:"relative",overflow:"hidden",boxShadow:"0 4px 20px rgba(0,40,20,0.08)"}},
-        suggested==="morning"&&React.createElement("div",{style:{position:"absolute",top:16,right:16,fontSize:10,letterSpacing:2,color:"#059669",textTransform:"uppercase",background:"rgba(5,150,105,0.08)",padding:"4px 10px",borderRadius:10}},"Suggested"),
-        React.createElement("div",{style:{fontSize:36,marginBottom:16}},"\u2600\uFE0F"),
-        React.createElement("div",{style:{fontSize:20,fontWeight:700,color:"#1A3328",marginBottom:8}},"Morning Priming"),
-        React.createElement("div",{style:{fontSize:13,color:"#4D7160",lineHeight:1.7}},"13 steps \u00B7 Activate your nervous system, meditate, set your identity, design your day"),
-        React.createElement("div",{style:{marginTop:20,fontSize:12,color:"#059669",letterSpacing:2,textTransform:"uppercase",fontWeight:600}},"Start \u2192")),
-      // Evening
-      React.createElement("div",{className:"mp-home-card",onClick:()=>onSelect("evening"),style:{flex:"1 1 280px",maxWidth:320,padding:"36px 32px",borderRadius:16,cursor:"pointer",background:"rgba(6,10,8,0.85)",border:suggested==="evening"?"2px solid rgba(74,222,128,0.4)":"1px solid rgba(74,222,128,0.1)",transition:"all 0.3s",position:"relative",overflow:"hidden",boxShadow:"0 4px 20px rgba(0,0,0,0.3)",backdropFilter:"blur(8px)"}},
-        suggested==="evening"&&React.createElement("div",{style:{position:"absolute",top:16,right:16,fontSize:10,letterSpacing:2,color:"#4ADE80",textTransform:"uppercase",background:"rgba(74,222,128,0.1)",padding:"4px 10px",borderRadius:10}},"Suggested"),
-        React.createElement("div",{style:{fontSize:36,marginBottom:16}},"\uD83C\uDF19"),
-        React.createElement("div",{style:{fontSize:20,fontWeight:700,color:"#E8F5EC",marginBottom:8}},"Evening Wind Down"),
-        React.createElement("div",{style:{fontSize:13,color:"#6A9E7A",lineHeight:1.7}},"7 steps \u00B7 Clear mental load, meditate, review wins, design tomorrow, rest with clarity"),
-        React.createElement("div",{style:{marginTop:20,fontSize:12,color:"#4ADE80",letterSpacing:2,textTransform:"uppercase",fontWeight:600}},"Start \u2192"))),
-    React.createElement(CommercialPanel),
-    React.createElement("div",{style:{marginTop:30,fontSize:11,color:"#7A9E8C",letterSpacing:1,textAlign:"center",lineHeight:1.7}},"Choose your protocol to begin · Privacy-first local prototype · Not medical advice"));}
-
-// ─── PROTOCOL ENGINE ────────────────────────────────────────────────────────────
-function ProtocolEngine({mode,onHome}){
-  const th=THEMES[mode]; const steps=mode==="morning"?MORNING_STEPS:EVENING_STEPS; const isMorning=mode==="morning";
-  const [currentStep,setCurrentStep]=useState(0);const [health,setHealth]=useState({});const [contentInput,setContentInput]=useState("");
-  const [win1,setWin1]=useState("");const [win2,setWin2]=useState("");const [win3,setWin3]=useState("");
-  const [needleInput,setNeedleInput]=useState("");const [delegateInput,setDelegateInput]=useState("");
-  const [qIdx]=useState(()=>Math.floor(Math.random()*STRATEGIC_QUESTIONS.length));
-  const [eveningWinText,setEveningWinText]=useState("");const [mentalDump,setMentalDump]=useState("");
-  const [tom1,setTom1]=useState("");const [tom2,setTom2]=useState("");const [tom3,setTom3]=useState("");
-  const [relationshipNote,setRelationshipNote]=useState("");
-  const [completed,setCompleted]=useState(false);const [sessionElapsed,setSessionElapsed]=useState(0);
-  const [completedSteps,setCompletedSteps]=useState(new Set());const [isTransitioning,setIsTransitioning]=useState(false);
-  const [showSidebar,setShowSidebar]=useState(window.innerWidth>900);
-  const [soundPlaying,setSoundPlaying]=useState(false);
-  const sessionTimerRef=useRef(null);const contentRef=useRef(null);
-
-  // Set body bg
-  useEffect(()=>{document.body.style.background=th.bg;return()=>{document.body.style.background="#D6E4DB";};},[mode]);
-
-  useEffect(()=>{if(completed){clearInterval(sessionTimerRef.current);return;}sessionTimerRef.current=setInterval(()=>setSessionElapsed(s=>s+1),1000);return()=>clearInterval(sessionTimerRef.current);},[completed]);
-  useEffect(()=>{setCompletedSteps(prev=>{if(currentStep>0){const n=new Set(prev);n.add(currentStep-1);return n;}return prev;});},[currentStep]);
-
-  const navigateTo=useCallback(idx=>{if(isTransitioning)return;setIsTransitioning(true);setTimeout(()=>{setCurrentStep(idx);setIsTransitioning(false);if(contentRef.current)contentRef.current.scrollTop=0;},200);},[isTransitioning]);
-
-  useEffect(()=>{const handler=e=>{if(e.target.tagName==="TEXTAREA"||e.target.tagName==="INPUT")return;
-    if(e.key==="ArrowRight"||e.key==="ArrowDown"){e.preventDefault();if(currentStep<steps.length-1)navigateTo(currentStep+1);}
-    if(e.key==="ArrowLeft"||e.key==="ArrowUp"){e.preventDefault();if(currentStep>0)navigateTo(currentStep-1);}
-    if(e.key==="Enter"&&currentStep===steps.length-1)finishProtocol();if(e.key==="Escape"){stopAmbient();setSoundPlaying(false);onHome();}};
-    window.addEventListener("keydown",handler);return()=>window.removeEventListener("keydown",handler);},[currentStep,navigateTo]);
-
-  // Cleanup sound on unmount
-  useEffect(()=>()=>{stopAmbient();},[]);
-
-  const toggleSound=()=>{
-    if(soundPlaying){stopAmbient();setSoundPlaying(false);}
-    else{if(isMorning)startMorningAmbient();else startEveningAmbient();setSoundPlaying(true);}
-  };
-
-  const finishProtocol=()=>{setCompletedSteps(prev=>{const n=new Set(prev);n.add(steps.length-1);return n;});saveSession(mode);setCompleted(true);};
-  const resetProtocol=()=>{setCompleted(false);setCurrentStep(0);setHealth({});setWin1("");setWin2("");setWin3("");setNeedleInput("");setDelegateInput("");setContentInput("");setEveningWinText("");setMentalDump("");setTom1("");setTom2("");setTom3("");setRelationshipNote("");setSessionElapsed(0);setCompletedSteps(new Set());};
-  const goHome=()=>{stopAmbient();setSoundPlaying(false);onHome();};
-
-  const step=steps[currentStep];const progress=(currentStep/(steps.length-1))*100;const rgb=hexToRgb(step.color);
-  const transitionStyle={animation:isTransitioning?"none":"mp-fadeSlideIn 0.45s ease",opacity:isTransitioning?0:1,transition:"opacity 0.2s ease"};
-
-  return React.createElement("div",{style:{minHeight:"100vh",background:isMorning?th.bg:"transparent",fontFamily:"'Georgia',serif",color:th.heading,display:"flex",flexDirection:"column",position:"relative"}},
-    isMorning ? React.createElement(MorningGlow,{color:step.color}) : React.createElement(AuroraBackground),
-
-    // Header
-    React.createElement("div",{style:{borderBottom:`1px solid ${th.border}`,padding:"14px 28px",display:"flex",justifyContent:"space-between",alignItems:"center",position:"relative",zIndex:10,background:th.headerBg,backdropFilter:"blur(12px)"}},
-      React.createElement("div",{style:{display:"flex",alignItems:"center",gap:12}},
-        React.createElement("button",{onClick:goHome,style:{background:"transparent",border:`1px solid ${th.border}`,color:th.muted,padding:"6px 10px",borderRadius:4,cursor:"pointer",fontSize:12,lineHeight:1}},"\u2190"),
-        React.createElement("button",{onClick:()=>setShowSidebar(!showSidebar),style:{background:"transparent",border:`1px solid ${th.border}`,color:th.muted,padding:"6px 10px",borderRadius:4,cursor:"pointer",fontSize:14,lineHeight:1}},showSidebar?"\u25C0":"\u25B6"),
-        React.createElement(SoundToggle,{mode,playing:soundPlaying,onToggle:toggleSound}),
-        React.createElement("div",null,
-          React.createElement("div",{style:{fontSize:10,letterSpacing:4,color:th.faint,textTransform:"uppercase"}},"Lex \u00B7 PJN"),
-          React.createElement("div",{style:{fontSize:15,color:th.body,letterSpacing:0.5}},isMorning?"Morning Priming Protocol":"Evening Wind Down Protocol"))),
-      React.createElement("div",{style:{display:"flex",alignItems:"center",gap:24}},
-        React.createElement("div",{style:{fontSize:12,color:th.faint,letterSpacing:2,fontFamily:"monospace",fontWeight:600}},formatTime(sessionElapsed)),
-        React.createElement("div",{style:{textAlign:"right"}},
-          React.createElement("div",{style:{fontSize:10,color:th.faint,letterSpacing:2,textTransform:"uppercase"}},formatDate()),
-          React.createElement("div",{style:{fontSize:11,color:step.color,marginTop:2,letterSpacing:1}},`Step ${currentStep+1} / ${steps.length}`)))),
-
-    // Progress
-    React.createElement("div",{style:{height:3,background:isMorning?"rgba(0,60,30,0.06)":"rgba(74,222,128,0.06)",position:"relative",zIndex:10}},
-      React.createElement("div",{style:{height:"100%",width:`${progress}%`,background:`linear-gradient(90deg,${step.color},${step.color}AA)`,transition:"width 0.5s cubic-bezier(0.4,0,0.2,1)",boxShadow:`0 1px 8px ${step.color}33`}})),
-
-    // Body
-    React.createElement("div",{style:{flex:1,display:"flex",position:"relative",zIndex:5}},
-      showSidebar&&React.createElement(SidebarComp,{steps,currentStep,onSelect:navigateTo,completedSteps,T:th}),
-      React.createElement("div",{ref:contentRef,style:{flex:1,display:"flex",alignItems:"flex-start",justifyContent:"center",padding:"48px 32px",overflowY:"auto"}},
-        React.createElement("div",{style:{maxWidth:680,width:"100%",...transitionStyle}},
-
-          // Step header
-          React.createElement("div",{style:{marginBottom:40}},
-            React.createElement("div",{style:{fontSize:11,color:step.color,letterSpacing:4,textTransform:"uppercase",marginBottom:12,display:"flex",alignItems:"center",gap:12}},step.label,
-              completedSteps.has(currentStep)&&React.createElement("span",{style:{fontSize:10,background:`rgba(${rgb},0.12)`,padding:"2px 8px",borderRadius:10,color:step.color}},"Completed")),
-            React.createElement("div",{style:{fontSize:34,fontWeight:700,lineHeight:1.2,marginBottom:10}},step.title),
-            React.createElement("div",{style:{fontSize:15,color:th.muted,fontStyle:"italic"}},step.subtitle)),
-
-          // ─── MORNING SECTIONS ─────────────────────────────────────
-          step.isTM&&React.createElement(TMTimer,{th}),
-
-          step.isBreathing&&React.createElement("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",gap:28}},
-            React.createElement("p",{style:{color:th.muted,lineHeight:1.8,textAlign:"center",maxWidth:480,fontSize:14}},"3 rounds of box breathing. Fast, sharp breaths. This activates your nervous system and floods your body with energy before the day begins."),
-            React.createElement(BreathingCircle,{clr:"#059669",phases:[{name:"Inhale",duration:4,instruction:"Through your nose — fast, powerful"},{name:"Hold",duration:4,instruction:"Suspend — feel the charge"},{name:"Exhale",duration:4,instruction:"Sharp out — release everything"},{name:"Rest",duration:4,instruction:"Empty — rest in the stillness"}],totalRounds:3,roundLabel:"Round",completeMsg:"Priming complete — nervous system activated"})),
-
-          step.prompts&&React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:18}},
-            step.prompts.map((p,i)=>React.createElement("div",{key:i,className:th.cardClass,style:{padding:"22px 24px",background:th.cardBg,border:`1px solid rgba(${rgb},0.15)`,borderLeft:`3px solid ${step.color}`,borderRadius:8,transition:"all 0.3s",animation:`mp-fadeSlideIn 0.4s ease ${i*0.08}s both`,boxShadow:th.shadow}},
-              React.createElement("div",{style:{fontSize:10,color:step.color,letterSpacing:3,marginBottom:10,textTransform:"uppercase",fontWeight:600}},step.id==="wins"?`Win ${i+1}`:step.id==="identity"?`Declaration ${i+1}`:`Step ${i+1}`),
-              React.createElement("div",{style:{color:th.body,lineHeight:1.75,fontSize:15}},p)))),
-
-          step.principles&&React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:14}},
-            step.principles.map((p,i)=>React.createElement("div",{key:i,className:th.cardClass,style:{display:"flex",gap:20,padding:"20px 24px",background:th.cardBg,border:`1px solid ${th.border}`,borderRadius:8,transition:"all 0.3s",animation:`mp-fadeSlideIn 0.4s ease ${i*0.08}s both`,boxShadow:th.shadow}},
-              React.createElement("div",{style:{fontSize:28,lineHeight:1,animation:"mp-float 3s ease-in-out infinite",animationDelay:`${i*0.5}s`}},p.icon),
-              React.createElement("div",null,
-                React.createElement("div",{style:{fontSize:17,fontWeight:700,marginBottom:6}},p.text),
-                React.createElement("div",{style:{fontSize:14,color:th.muted,fontStyle:"italic",lineHeight:1.6}},p.sub))))),
-
-          step.lifebook&&React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:14}},
-            LIFEBOOK_DIMS.map((d,i)=>React.createElement("div",{key:i,className:th.cardClass,style:{display:"flex",gap:20,padding:"18px 22px",background:th.cardBg,border:"1px solid rgba(124,58,237,0.12)",borderRadius:8,transition:"all 0.3s",animation:`mp-fadeSlideIn 0.4s ease ${i*0.06}s both`,boxShadow:th.shadow}},
-              React.createElement("div",{style:{minWidth:130,fontSize:11,letterSpacing:1,color:"#7C3AED",textTransform:"uppercase",fontWeight:700,paddingTop:3}},d.dim),
-              React.createElement("div",{style:{fontSize:14,color:th.muted,lineHeight:1.7}},d.vision)))),
-
-          step.todayWins&&React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:22}},
-            [{label:"Health & Vitality",ph:"What one health outcome would make today a win?",val:win1,set:setWin1,icon:"\uD83D\uDCAA"},
-             {label:"Family & Marriage",ph:"What one relational outcome would make today a win?",val:win2,set:setWin2,icon:"\u2764\uFE0F"},
-             {label:"PJN Leadership & Growth",ph:"What one practice outcome would make today a win?",val:win3,set:setWin3,icon:"\uD83D\uDE80"}
-            ].map((item,i)=>React.createElement("div",{key:i,style:{display:"flex",flexDirection:"column",gap:10,animation:`mp-fadeSlideIn 0.4s ease ${i*0.1}s both`}},
-              React.createElement("label",{style:{fontSize:11,letterSpacing:3,color:"#B45309",textTransform:"uppercase",display:"flex",alignItems:"center",gap:8}},React.createElement("span",null,item.icon),` ${item.label}`),
-              React.createElement(TA,{val:item.val,setVal:item.set,placeholder:item.ph,borderColor:"rgba(180,83,9,0.2)",minH:76,th})))),
-
-          step.priorities&&React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:22}},
-            React.createElement("div",{style:{padding:"20px 24px",background:th.cardBg,border:"1px solid rgba(15,118,110,0.15)",borderRadius:8,boxShadow:th.shadow}},
-              React.createElement("div",{style:{fontSize:11,color:"#0F766E",letterSpacing:3,textTransform:"uppercase",marginBottom:12,fontWeight:600}},"Builder Lens"),
-              React.createElement("div",{style:{fontSize:14,color:th.muted,lineHeight:1.8}},"The Strategic Builder does not react to the day. He ",React.createElement("em",null,"designs")," it.")),
-            React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:10}},
-              React.createElement("label",{style:{fontSize:11,letterSpacing:3,color:"#0F766E",textTransform:"uppercase"}},"What moves the needle most today?"),
-              React.createElement(TA,{val:needleInput,setVal:setNeedleInput,placeholder:"The one thing that matters most...",borderColor:"rgba(15,118,110,0.2)",minH:84,th})),
-            React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:10}},
-              React.createElement("label",{style:{fontSize:11,letterSpacing:3,color:th.faint,textTransform:"uppercase"}},"What to ignore or delegate?"),
-              React.createElement(TA,{val:delegateInput,setVal:setDelegateInput,placeholder:"What gets off your plate today...",borderColor:th.border,minH:84,th}))),
-
-          step.health&&React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:12}},
-            HEALTH_ITEMS.map((item,i)=>React.createElement("div",{key:item.id,className:"mp-health-item",onClick:()=>setHealth(h=>({...h,[item.id]:!h[item.id]})),style:{display:"flex",alignItems:"center",gap:16,padding:"18px 22px",cursor:"pointer",background:health[item.id]?`rgba(${hexToRgb(th.checkBg)},0.1)`:th.cardBg,border:`1px solid ${health[item.id]?`rgba(${hexToRgb(th.checkBg)},0.3)`:th.border}`,borderRadius:10,transition:"all 0.25s",animation:`mp-fadeSlideIn 0.4s ease ${i*0.06}s both`,boxShadow:th.shadow}},
-              React.createElement("div",{style:{width:26,height:26,borderRadius:6,border:`2px solid ${health[item.id]?th.checkBg:th.faint+"44"}`,background:health[item.id]?th.checkBg:"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,transition:"all 0.2s",animation:health[item.id]?"mp-checkPop 0.3s ease":"none"}},health[item.id]&&React.createElement("span",{style:{color:th.checkColor,fontSize:15,fontWeight:700}},"\u2713")),
-              React.createElement("span",{style:{fontSize:22}},item.icon),
-              React.createElement("span",{style:{fontSize:15,color:health[item.id]?th.checkBg:th.body,transition:"color 0.2s",fontWeight:health[item.id]?600:400}},item.label),
-              health[item.id]&&React.createElement("span",{style:{marginLeft:"auto",fontSize:11,color:th.checkBg,letterSpacing:2,textTransform:"uppercase"}},"Locked"))),
-            React.createElement("div",{style:{marginTop:12}},
-              React.createElement("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:6}},
-                React.createElement("span",{style:{fontSize:12,color:th.muted}},`${Object.values(health).filter(Boolean).length} of ${HEALTH_ITEMS.length}`),
-                React.createElement("span",{style:{fontSize:12,color:th.checkBg}},`${Math.round(Object.values(health).filter(Boolean).length/HEALTH_ITEMS.length*100)}%`)),
-              React.createElement("div",{style:{height:4,background:isMorning?"rgba(0,60,30,0.06)":"rgba(74,222,128,0.08)",borderRadius:2,overflow:"hidden"}},
-                React.createElement("div",{style:{height:"100%",borderRadius:2,width:`${Object.values(health).filter(Boolean).length/HEALTH_ITEMS.length*100}%`,background:`linear-gradient(90deg,${th.checkBg},#10B981)`,transition:"width 0.4s ease"}})))),
-
-          step.contentQ&&React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:22}},
-            React.createElement("div",{style:{padding:"20px 24px",background:th.cardBg,border:"1px solid rgba(3,105,161,0.15)",borderRadius:8,boxShadow:th.shadow}},
-              React.createElement("div",{style:{fontSize:14,color:th.muted,lineHeight:1.8}},"Your patients, your future patients, and your peers are watching. Every piece of content is a signal that PJN is the authority.")),
-            React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:10}},
-              React.createElement("label",{style:{fontSize:11,letterSpacing:3,color:"#0369A1",textTransform:"uppercase"}},"Today's content piece"),
-              React.createElement(TA,{val:contentInput,setVal:setContentInput,placeholder:"e.g. Instagram post, podcast clip, patient education video...",borderColor:"rgba(3,105,161,0.2)",minH:110,th}))),
-
-          step.strategic&&React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:28}},
-            React.createElement("div",{style:{padding:"36px 32px",background:th.cardBg,border:"1px solid rgba(124,58,237,0.15)",borderRadius:10,position:"relative",overflow:"hidden",boxShadow:th.shadow}},
-              React.createElement("div",{style:{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,transparent,#7C3AED,transparent)",animation:"mp-shimmer 3s linear infinite",backgroundSize:"200% 100%"}}),
-              React.createElement("div",{style:{fontSize:10,color:"#7C3AED",letterSpacing:4,textTransform:"uppercase",marginBottom:20,fontWeight:600}},"Today's Strategic Question"),
-              React.createElement("div",{style:{fontSize:20,lineHeight:1.7,fontStyle:"italic"}},`\u201C${STRATEGIC_QUESTIONS[qIdx]}\u201D`)),
-            React.createElement("div",{style:{color:th.muted,fontSize:13,lineHeight:1.8,fontStyle:"italic",textAlign:"center",padding:"0 40px"}},"Sit with this question. Don\u2019t rush to answer it.")),
-
-          // ─── EVENING SECTIONS ─────────────────────────────────────
-          step.isEveningBreathing&&React.createElement("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",gap:28}},
-            React.createElement("p",{style:{color:th.muted,lineHeight:1.8,textAlign:"center",maxWidth:500,fontSize:14}},"Inhale for 4 seconds, exhale for 6 seconds. 7 cycles. This activates your parasympathetic nervous system and shifts your body into recovery mode."),
-            React.createElement(BreathingCircle,{clr:"#4ADE80",phases:[{name:"Inhale",duration:4,instruction:"Slowly through your nose — fill your lungs deeply"},{name:"Exhale",duration:6,instruction:"Slow, steady exhale — let everything soften"}],totalRounds:7,roundLabel:"Cycle",completeMsg:"Nervous system downshifted — calm activated"}),
-            React.createElement("div",{style:{padding:"20px 24px",background:th.cardBg,border:`1px solid rgba(74,222,128,0.15)`,borderRadius:8,maxWidth:500,width:"100%",marginTop:8,boxShadow:th.shadow}},
-              React.createElement("div",{style:{fontSize:11,color:"#4ADE80",letterSpacing:2,textTransform:"uppercase",marginBottom:10,fontWeight:600}},"While breathing, reflect:"),
-              React.createElement("div",{style:{fontSize:14,color:th.muted,lineHeight:1.8,fontStyle:"italic"}},"Think of one moment today that went well. Let your body register the progress, not the problems."))),
-
-          step.eveningWins&&React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:22}},
-            React.createElement("div",{style:{padding:"20px 24px",background:th.cardBg,border:"1px solid rgba(251,191,36,0.15)",borderRadius:8,boxShadow:th.shadow}},
-              React.createElement("div",{style:{fontSize:14,color:th.muted,lineHeight:1.8}},"What made today a win? A patient helped, something improved, a meaningful moment with family, or simply staying calm under pressure.")),
-            React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:10}},
-              React.createElement("label",{style:{fontSize:11,letterSpacing:3,color:"#FBBF24",textTransform:"uppercase"}},"Today's win"),
-              React.createElement(TA,{val:eveningWinText,setVal:setEveningWinText,placeholder:"What made today a win?",borderColor:"rgba(251,191,36,0.2)",minH:100,th}))),
-
-          step.mentalRelease&&React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:22}},
-            React.createElement("div",{style:{padding:"20px 24px",background:th.cardBg,border:`1px solid ${th.border}`,borderRadius:8,boxShadow:th.shadow}},
-              React.createElement("div",{style:{fontSize:14,color:th.muted,lineHeight:1.8}},"Write down anything unfinished or still on your mind. Get it out so your brain can fully recover overnight.")),
-            React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:10}},
-              React.createElement("label",{style:{fontSize:11,letterSpacing:3,color:th.faint,textTransform:"uppercase"}},"Brain dump"),
-              React.createElement(TA,{val:mentalDump,setVal:setMentalDump,placeholder:"Everything on your mind — get it all out...",borderColor:th.border,minH:140,th}))),
-
-          step.tomorrowRule&&React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:22}},
-            React.createElement("div",{style:{padding:"20px 24px",background:th.cardBg,border:"1px solid rgba(52,211,153,0.15)",borderRadius:8,boxShadow:th.shadow}},
-              React.createElement("div",{style:{fontSize:14,color:th.muted,lineHeight:1.8}},"Choose three actions that would make tomorrow successful.")),
-            [{label:"Action 1",ph:"e.g. Record a patient education video",val:tom1,set:setTom1,icon:"1\uFE0F\u20E3"},
-             {label:"Action 2",ph:"e.g. Improve a patient system or workflow",val:tom2,set:setTom2,icon:"2\uFE0F\u20E3"},
-             {label:"Action 3",ph:"e.g. Quality time with family",val:tom3,set:setTom3,icon:"3\uFE0F\u20E3"}
-            ].map((item,i)=>React.createElement("div",{key:i,style:{display:"flex",flexDirection:"column",gap:10,animation:`mp-fadeSlideIn 0.4s ease ${i*0.1}s both`}},
-              React.createElement("label",{style:{fontSize:11,letterSpacing:3,color:"#34D399",textTransform:"uppercase",display:"flex",alignItems:"center",gap:8}},React.createElement("span",null,item.icon),` ${item.label}`),
-              React.createElement(TA,{val:item.val,setVal:item.set,placeholder:item.ph,borderColor:"rgba(52,211,153,0.2)",minH:60,th})))),
-
-          step.relationship&&React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:22}},
-            React.createElement("div",{style:{padding:"24px 28px",background:th.cardBg,border:"1px solid rgba(251,113,133,0.15)",borderRadius:8,boxShadow:th.shadow}},
-              React.createElement("div",{style:{fontSize:11,color:"#FB7185",letterSpacing:3,textTransform:"uppercase",marginBottom:12,fontWeight:600}},"Connection Ritual"),
-              React.createElement("div",{style:{fontSize:15,color:th.body,lineHeight:1.8}},"Create a small positive connection with Jenn tonight. Appreciation, affection, conversation, or laughter. Small, consistent deposits build everything.")),
-            React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:14}},
-              React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:10}},
-                React.createElement("label",{style:{fontSize:11,letterSpacing:3,color:"#FB7185",textTransform:"uppercase"}},"Tonight's connection"),
-                React.createElement(TA,{val:relationshipNote,setVal:setRelationshipNote,placeholder:"How will you connect tonight?",borderColor:"rgba(251,113,133,0.2)",minH:76,th})),
-              React.createElement("div",{style:{display:"flex",gap:12,flexWrap:"wrap"}},
-                ["\uD83D\uDE4F Appreciation","\uD83E\uDEC2 Affection","\uD83D\uDDE3\uFE0F Conversation","\uD83D\uDE02 Laughter"].map((opt,i)=>React.createElement("div",{key:i,onClick:()=>setRelationshipNote(r=>r?(r+", "+opt.slice(2)):opt.slice(2)),style:{padding:"8px 16px",background:"rgba(251,113,133,0.08)",border:"1px solid rgba(251,113,133,0.2)",borderRadius:20,cursor:"pointer",fontSize:13,color:"#FB7185",transition:"all 0.2s"}},opt))))),
-
-          step.eveningIdentity&&React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:28}},
-            React.createElement("div",{style:{padding:"36px 32px",background:th.cardBg,border:"1px solid rgba(167,139,250,0.15)",borderRadius:10,position:"relative",overflow:"hidden",boxShadow:th.shadow}},
-              React.createElement("div",{style:{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,transparent,#A78BFA,transparent)",animation:"mp-shimmer 4s linear infinite",backgroundSize:"200% 100%"}}),
-              React.createElement("div",{style:{fontSize:10,color:"#A78BFA",letterSpacing:4,textTransform:"uppercase",marginBottom:24,fontWeight:600}},"Before You Sleep, Say It"),
-              React.createElement("div",{style:{fontSize:20,lineHeight:1.8,fontStyle:"italic",textAlign:"center"}},"\u201CI am building a life of strength, leadership, health, and family.\u201D")),
-            React.createElement("div",{style:{color:th.muted,fontSize:13,lineHeight:1.8,fontStyle:"italic",textAlign:"center",padding:"0 40px"}},"This anchors long-term direction and purpose. Let it be the last conscious thought before sleep.")),
-
-          React.createElement("div",{style:{marginTop:48,textAlign:"center",fontSize:11,color:th.faint,letterSpacing:1}},"Arrow keys to navigate \u00B7 Enter to complete \u00B7 Esc for home")))),
-
-    // Footer
-    !completed&&React.createElement("div",{style:{borderTop:`1px solid ${th.border}`,padding:"18px 28px",display:"flex",justifyContent:"space-between",alignItems:"center",position:"relative",zIndex:10,background:th.headerBg,backdropFilter:"blur(12px)"}},
-      React.createElement("button",{onClick:()=>navigateTo(Math.max(0,currentStep-1)),disabled:currentStep===0,style:{background:"transparent",border:`1px solid ${th.border}`,color:currentStep===0?th.navBtn.disabledColor:th.navBtn.color,padding:"10px 24px",borderRadius:8,cursor:currentStep===0?"default":"pointer",fontSize:13,letterSpacing:1,transition:"all 0.2s"}},"\u2190 Back"),
-      React.createElement("div",{style:{display:"flex",gap:5,alignItems:"center"}},
-        steps.map((s,i)=>React.createElement("div",{key:i,className:"mp-nav-dot",onClick:()=>navigateTo(i),style:{width:i===currentStep?22:7,height:7,borderRadius:4,background:i===currentStep?step.color:completedSteps.has(i)?`${s.color}88`:th.dotInactive,cursor:"pointer",transition:"all 0.35s ease"}}))),
-      currentStep<steps.length-1
-        ? React.createElement("button",{onClick:()=>navigateTo(currentStep+1),style:{background:`linear-gradient(135deg,${step.color},${step.color}CC)`,border:"none",color:isMorning?"#fff":"#060A08",padding:"10px 24px",borderRadius:8,cursor:"pointer",fontSize:13,letterSpacing:1,fontWeight:600,boxShadow:`0 4px 16px ${step.color}33`,transition:"all 0.2s"}},"Next \u2192")
-        : React.createElement("button",{onClick:finishProtocol,style:{background:isMorning?"linear-gradient(135deg,#059669,#047857)":"linear-gradient(135deg,#4ADE80,#059669)",border:"none",color:isMorning?"#fff":"#060A08",padding:"10px 28px",borderRadius:8,cursor:"pointer",fontSize:13,letterSpacing:2,textTransform:"uppercase",fontWeight:700,transition:"all 0.2s"}},isMorning?"Lock In \u2713":"Close the Day \u2713")),
-
-    completed&&React.createElement(CompletionScreen,{data:{win1,win2,win3,needleInput,delegateInput,health,contentInput,eveningWinText,mentalDump,tom1,tom2,tom3,relationshipNote},elapsed:sessionElapsed,onReset:resetProtocol,onHome:goHome,mode}));}
-
-function App(){const[mode,setMode]=useState(null);
-  useEffect(()=>{if(!mode)document.body.style.background="#D6E4DB";},[mode]);
-  if(!mode)return React.createElement(HomeScreen,{onSelect:setMode});
-  return React.createElement(ProtocolEngine,{mode,onHome:()=>setMode(null)});}
-
-ReactDOM.render(React.createElement(App),document.getElementById("root"));
-</script>
 <script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
+/* ================= STATE ================= */
+const KEY='ppa-state-v2';
+const DEFAULT_STACK=[
+  {id:'pep-am',emoji:'🧬',name:'Peptide protocol',detail:'per current cycle',group:'AM'},
+  {id:'hor-am',emoji:'⚗️',name:'Hormone support',detail:'per protocol',group:'AM'},
+  {id:'sup-am',emoji:'🌅',name:'AM supplements',detail:'D3+K2 · omega-3 · minerals',group:'AM'},
+  {id:'sup-pm',emoji:'🌙',name:'PM supplements',detail:'magnesium glycinate · zinc',group:'PM'},
+  {id:'pep-pm',emoji:'🧬',name:'PM peptide / hormone',detail:'per current cycle',group:'PM'},
+];
+let S=load();
+function load(){
+  try{
+    const raw=localStorage.getItem(KEY);
+    if(raw){ const s=JSON.parse(raw); if(!s.stack||!s.stack.length) s.stack=DEFAULT_STACK.slice(); return s; }
+  }catch(e){}
+  let legacy={};
+  try{ legacy=JSON.parse(localStorage.getItem('lex-pjn-progress-v1'))||{}; }catch(e){}
+  return {
+    xp:0, streak:legacy.streak||0, best:legacy.streak||0,
+    sessions:legacy.sessions||legacy.count||0,
+    lastPrimeDate:null, themeOverride:null, hydrationGoal:90,
+    stack:DEFAULT_STACK.slice(), days:{}, workouts:{}, recovery:{}, evidence:[]
+  };
+}
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
+
+function todayKey(d){ const t=d||new Date(); return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0'); }
+function yesterKey(){ const t=new Date(); t.setDate(t.getDate()-1); return todayKey(t); }
+function weekKey(){ const t=new Date(); const d=new Date(t); const dow=(t.getDay()+6)%7; d.setDate(t.getDate()-dow); return 'wk-'+todayKey(d); }
+function day(k){
+  const key=k||todayKey();
+  if(!S.days[key]) S.days[key]={hydrationOz:0,morningDone:false,eveningDone:false,gratitude:['','',''],oneThing:'',slot:'9:00 AM',visionPicks:[],wins:['','',''],tomorrow:'',stackTaken:{},trio:{pemf:{am:false,pm:false},pulsetto:{am:false,pm:false},tm:{am:false,pm:false}},trained:false,mirrorDone:false,questXp:{}};
+  return S.days[key];
+}
+function rec(){ const k=weekKey(); if(!S.recovery[k]) S.recovery[k]={sauna:0,cold:0,red:0}; return S.recovery[k]; }
+
+/* ================= THEME ================= */
+function isNightNow(){ const h=new Date().getHours(); return h<6||h>=18; }
+function applyTheme(){
+  const night = S.themeOverride ? S.themeOverride==='night' : isNightNow();
+  document.documentElement.classList.toggle('night',night);
+  document.getElementById('modeBtn').textContent = night?'☀':'☾';
+  const meta=document.querySelector('meta[name=theme-color]');
+  if(meta) meta.content = night?'#1c2721':'#f5f3ec';
+}
+function toggleTheme(){
+  const cur = document.documentElement.classList.contains('night');
+  S.themeOverride = cur?'day':'night'; save(); applyTheme();
+}
+
+/* ================= XP / TOAST ================= */
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2300);
+}
+function award(qid,xp,msg){
+  const d=day();
+  if(d.questXp[qid]) return false;
+  d.questXp[qid]=true; S.xp+=xp; save();
+  toast(msg||('✨ +'+xp+' XP')); renderHome();
+  return true;
+}
+
+/* ================= QUESTS ================= */
+const QUESTS=[
+  {id:'stack-am', t:'AM stack taken', sub:'peptides · hormones · supplements', xp:15, done:()=>S.stack.filter(i=>i.group==='AM').every(i=>day().stackTaken[i.id]), goto:()=>{go('body');segSel('stack');}},
+  {id:'morning', t:'Morning Priming', sub:'the full protocol', xp:40, done:()=>day().morningDone, goto:()=>startRun('morning')},
+  {id:'train', t:'Train', sub:'controlled reps · TUT focus', xp:25, done:()=>day().trained, goto:()=>{go('body');segSel('train');}},
+  {id:'recov', t:'Sauna · Cold · Red light', sub:'log in Recovery', xp:20, done:()=>!!day().questXp['recov'], goto:()=>{go('body');segSel('rec');}},
+  {id:'trio-am', t:'PEMF + Pulsetto + TM — AM', sub:'round 1 of 2', xp:15, done:()=>{const t=day().trio;return t.pemf.am&&t.pulsetto.am&&t.tm.am;}, goto:()=>{go('body');segSel('rec');}},
+  {id:'trio-pm', t:'PEMF + Pulsetto + TM — PM', sub:'round 2 of 2', xp:15, done:()=>{const t=day().trio;return t.pemf.pm&&t.pulsetto.pm&&t.tm.pm;}, goto:()=>{go('body');segSel('rec');}},
+  {id:'hydro', t:'Hydration goal', sub:'90 oz', xp:15, done:()=>day().hydrationOz>=S.hydrationGoal, goto:()=>go('home')},
+  {id:'mirror', t:'The Mirror', sub:'one honest answer', xp:20, done:()=>day().mirrorDone, goto:()=>go('mirror')},
+  {id:'evening', t:'Evening Wind Down', sub:'wins · clear · tomorrow', xp:30, done:()=>day().eveningDone, goto:()=>startRun('evening')},
+];
+
+/* ================= RENDER: HOME ================= */
+function ringSet(dialId,inId,frac,colorVar,label){
+  const deg=Math.round(Math.min(1,frac)*360);
+  document.getElementById(dialId).style.background=`conic-gradient(var(${colorVar}) ${deg}deg, var(--card2) ${deg}deg)`;
+  document.getElementById(inId).textContent=label;
+}
+function renderHome(){
+  const d=day();
+  const h=new Date().getHours();
+  document.getElementById('greet').textContent = h<12?'Good morning, Pascal': h<17?'Good afternoon, Pascal':'Good evening, Pascal';
+  const now=new Date();
+  const days=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  document.getElementById('subline').textContent = days[now.getDay()]+' '+String(now.getMonth()+1).padStart(2,'0')+'.'+String(now.getDate()).padStart(2,'0')+' · '+S.streak+'-day streak · best '+S.best;
+  document.getElementById('streakN').textContent=S.streak;
+  const lvl=1+Math.floor(S.xp/500), inLvl=S.xp%500;
+  document.getElementById('lvLbl').textContent='⚡ Pascal 2.0 · Level '+lvl;
+  document.getElementById('xpN').textContent=inLvl+' / 500 XP';
+  document.getElementById('xpBar').style.width=(inLvl/500*100)+'%';
+  const primeFrac=(d.morningDone?0.5:0)+(d.eveningDone?0.5:0);
+  ringSet('dPrime','dPrimeIn',primeFrac,'--green',Math.round(primeFrac*100)+'%');
+  const hf=d.hydrationOz/S.hydrationGoal;
+  ringSet('dHydro','dHydroIn',hf,'--blue',Math.round(Math.min(1,hf)*100)+'%');
+  const qdone=QUESTS.filter(q=>q.done()).length;
+  ringSet('dQuest','dQuestIn',qdone/QUESTS.length,'--violet',qdone+'/'+QUESTS.length);
+  document.getElementById('hOz').textContent=d.hydrationOz;
+  document.getElementById('hGoal').textContent=S.hydrationGoal;
+  document.getElementById('hBar').style.width=Math.min(100,Math.round(hf*100))+'%';
+  document.getElementById('mirHomeQ').textContent='"'+mirrorQ()+'"';
+  document.getElementById('mirHomeGo').textContent = d.mirrorDone?'Answered ✓':'Answer →';
+  document.getElementById('mornCta').textContent=d.morningDone?'✓':'→';
+  document.getElementById('eveCta').textContent=d.eveningDone?'✓':'→';
+  const left=QUESTS.filter(q=>!q.done()).reduce((a,q)=>a+q.xp,0);
+  document.getElementById('qLeft').textContent=left+' XP left';
+  document.getElementById('questList').innerHTML=QUESTS.map((q,i)=>
+    `<div class="quest ${q.done()?'done':''}" onclick="questTap(${i})">
+      <div class="ck">✓</div>
+      <div class="qtxt">${q.t}<span class="sub">${q.sub}</span></div>
+      <div class="xpv">+${q.xp}</div>
+    </div>`).join('');
+}
+function questTap(i){
+  const q=QUESTS[i];
+  if(!q.done()&&q.goto) q.goto();
+}
+function addWater(){
+  const d=day();
+  d.hydrationOz=Math.min(200,d.hydrationOz+8); save();
+  if(d.hydrationOz>=S.hydrationGoal) award('hydro',15,'💧 Hydration goal · +15 XP');
+  renderHome();
+}
+
+/* ================= NAV ================= */
+const screens={home:'s-home',run:'s-run',body:'s-body',mirror:'s-mirror'};
+const navs={home:'nav-home',run:'nav-run',body:'nav-body',mirror:'nav-mirror'};
+function go(k){
+  clearInterval(breathTimer);
+  for(const s in screens) document.getElementById(screens[s]).classList.remove('active');
+  document.getElementById(screens[k]).classList.add('active');
+  for(const n in navs) document.getElementById(navs[n]).classList.remove('on');
+  if(navs[k]) document.getElementById(navs[k]).classList.add('on');
+  window.scrollTo(0,0);
+  if(k==='home') renderHome();
+  if(k==='body'){ renderStack(); renderTrain(); renderRec(); }
+  if(k==='mirror') renderMirror();
+}
+
+/* ================= LIFEBOOK / RUNNER ================= */
+const LIFEBOOK=[
+  ['💪','Health & Fitness','Is today\'s plan moving the body toward Pascal 2.0?'],
+  ['🧠','Intellectual Life','What will you learn today — on purpose?'],
+  ['❤️','Emotional Life','What emotion will you lead with today?'],
+  ['🛡️','Character','Where will you keep your word today, even when it\'s hard?'],
+  ['✨','Spiritual Life','What will connect you to something bigger today?'],
+  ['💞','Love Relationship','What\'s one deposit you\'ll make in your relationship today?'],
+  ['👨‍👧‍👦','Parenting','What moment will you create with your kids today?'],
+  ['🤝','Social Life','Which friend gets five real minutes from you today?'],
+  ['💰','Financial','One move today that strengthens the financial position?'],
+  ['🦷','Career / Practice','What\'s the highest-leverage move for the practice today?'],
+  ['🌴','Quality of Life','What will you enjoy today — on purpose?'],
+  ['🧭','Life Vision','Does today\'s plan look like the life you\'re designing?'],
+];
+const MORNING_STEPS=['breath','gratitude','frog','lifebook','vision'];
+const EVENING_STEPS=['wins','clear','tomorrow'];
+let runMode='morning', step=0, breathTimer=null, visPicked=[], lqIdx=null;
+
+function startRun(mode){
+  runMode=mode; step=0; visPicked=[];
+  go('run'); renderStep();
+  document.getElementById('nav-run').classList.add('on');
+}
+function stepsArr(){ return runMode==='morning'?MORNING_STEPS:EVENING_STEPS; }
+
+function renderStep(){
+  clearInterval(breathTimer);
+  const steps=stepsArr();
+  const b=document.getElementById('runBody');
+  const btn=document.getElementById('nextBtn');
+  document.getElementById('runNo').textContent=(step+1)+' / '+steps.length;
+  document.getElementById('runBar').style.width=((step+1)/steps.length*100)+'%';
+  btn.textContent = step>=steps.length-1 ? (runMode==='morning'?'Complete priming ✓':'Complete wind down ✓') : 'Continue →';
+  const d=day(); const type=steps[step];
+
+  if(type==='breath'){
+    b.innerHTML=`<div class="kick">Step 01 · Breathe</div>
+      <h2>Box breathing</h2>
+      <p class="desc">4 counts in · 4 hold · 4 out · 4 hold. Ten rounds. Let the box set the pace.</p>
+      <div class="boxwrap"><div class="boxsq"></div><div class="boxcore" id="bCore"><div class="cnt" id="bCnt">1</div></div></div>
+      <div class="phase" id="bPhase">Inhale</div>
+      <div class="roundlbl" id="bRound">Round 1 of 10</div>`;
+    btn.textContent='Skip breathing →';
+    runBreath();
+  }
+  if(type==='gratitude'){
+    b.innerHTML=`<div class="kick">Step 02 · Gratitude</div>
+      <h2>Three things<br>you're grateful for</h2>
+      <p class="desc">Specific beats general. Yesterday's small moment beats a big abstraction.</p>
+      <div style="text-align:left;margin-top:14px;">
+        <input class="ginput" id="g0" placeholder="1 · a small moment from yesterday" value="${esc(d.gratitude[0])}"/>
+        <input class="ginput" id="g1" placeholder="2 · a person" value="${esc(d.gratitude[1])}"/>
+        <input class="ginput" id="g2" placeholder="3 · a body strong enough to train" value="${esc(d.gratitude[2])}"/>
+      </div>`;
+  }
+  if(type==='frog'){
+    b.innerHTML=`<div class="kick">Step 03 · The One Thing</div>
+      <h2>One important, possibly<br>difficult thing today</h2>
+      <p class="desc">Name it, then give it a morning slot. Hard things go first — before the day gets a vote.</p>
+      <div style="text-align:left;margin-top:14px;"><input class="ginput" id="frogIn" placeholder="Today I will…" value="${esc(d.oneThing)}"/></div>
+      <div class="chips" id="frogChips">${['8:00 AM','9:00 AM','10:00 AM','11:00 AM'].map(s=>`<span class="chip ${d.slot===s?'on':''}" onclick="slotSel(this,'${s}')">${s}</span>`).join('')}</div>`;
+  }
+  if(type==='lifebook'){
+    b.innerHTML=`<div class="kick">Step 04 · Lifebook Review</div>
+      <h2>Your 12 categories</h2>
+      <p class="desc">Tap a category — answer its question in your head. Green means reviewed.</p>
+      <div class="lq" id="lq"><div class="cat" id="lqCat"></div><p id="lqQ"></p><button onclick="lqDone()">Reviewed ✓</button></div>
+      <div class="lgrid">${LIFEBOOK.map((c,i)=>`<div class="lcat" id="lc${i}" onclick="lqOpen(${i})"><span class="e">${c[0]}</span><h5>${c[1]}</h5></div>`).join('')}</div>`;
+  }
+  if(type==='vision'){
+    const target=new Date(); target.setMonth(target.getMonth()+3);
+    const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const tstr=months[target.getMonth()]+' '+target.getDate()+', '+target.getFullYear();
+    b.innerHTML=`<div class="kick">Step 05 · Vision</div>
+      <h2>Pick 3 goals.<br>See them done.</h2>
+      <p class="desc">Choose three categories. Then close your eyes — it's <b>${tstr}</b> — and live inside the win for 30 seconds each.</p>
+      <div class="chips vispick" id="visChips">${LIFEBOOK.map((c,i)=>`<span class="chip" onclick="visSel(this,${i})">${c[0]} ${c[1]}</span>`).join('')}</div>
+      <div class="viscard" id="visCard"><div class="d">${tstr} — three months out</div><p id="visTxt"></p></div>`;
+  }
+  /* evening */
+  if(type==='wins'){
+    b.innerHTML=`<div class="kick">Step 01 · Wins</div>
+      <h2>What did you<br>accomplish today?</h2>
+      <p class="desc">Three wins, any size. This is the evidence that today counted — tomorrow's Mirror will remind you.</p>
+      <div style="text-align:left;margin-top:14px;">
+        <input class="ginput" id="w0" placeholder="1 · a win from today" value="${esc(d.wins[0])}"/>
+        <input class="ginput" id="w1" placeholder="2 · another one" value="${esc(d.wins[1])}"/>
+        <input class="ginput" id="w2" placeholder="3 · even a small one" value="${esc(d.wins[2])}"/>
+      </div>`;
+  }
+  if(type==='clear'){
+    b.innerHTML=`<div class="kick">Step 02 · Clear the load</div>
+      <h2>Empty the head</h2>
+      <p class="desc">Anything looping — worries, open loops, unfinished business. Write it down so your brain can let it go tonight.</p>
+      <textarea class="gtext" id="clearIn" placeholder="It's out of my head and on the page…" style="text-align:left;"></textarea>`;
+  }
+  if(type==='tomorrow'){
+    b.innerHTML=`<div class="kick">Step 03 · Design tomorrow</div>
+      <h2>Tomorrow's<br>One Thing</h2>
+      <p class="desc">Decide tonight, so tomorrow-morning Pascal wakes up with orders instead of options.</p>
+      <div style="text-align:left;margin-top:14px;"><input class="ginput" id="tmrIn" placeholder="Tomorrow I will…" value="${esc(d.tomorrow)}"/></div>`;
+  }
+}
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+function runBreath(){
+  const phases=['Inhale','Hold','Exhale','Hold'];
+  let ph=0,c=1,round=1;
+  const core=document.getElementById('bCore');
+  if(core) core.style.transform='scale(1.14)';
+  breathTimer=setInterval(()=>{
+    c++;
+    if(c>4){
+      c=1; ph=(ph+1)%4;
+      if(ph===0){
+        round++;
+        if(round>10){
+          clearInterval(breathTimer);
+          const p=document.getElementById('bPhase'), r=document.getElementById('bRound');
+          if(p)p.textContent='Complete ✓'; if(r)r.textContent='10 rounds done';
+          document.getElementById('nextBtn').textContent='Continue →';
+          return;
+        }
+        const r=document.getElementById('bRound'); if(r)r.textContent='Round '+round+' of 10';
+      }
+      const p=document.getElementById('bPhase'); if(p)p.textContent=phases[ph];
+      if(core){ if(ph===0)core.style.transform='scale(1.14)'; if(ph===2)core.style.transform='scale(.86)'; }
+    }
+    const el=document.getElementById('bCnt'); if(el)el.textContent=c;
+  },1000);
+}
+function slotSel(el,s){ day().slot=s; save(); el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('on')); el.classList.add('on'); }
+function lqOpen(i){
+  lqIdx=i;
+  document.getElementById('lqCat').textContent=LIFEBOOK[i][1];
+  document.getElementById('lqQ').textContent=LIFEBOOK[i][2];
+  document.getElementById('lq').style.display='block';
+}
+function lqDone(){ if(lqIdx!==null) document.getElementById('lc'+lqIdx).classList.add('rev'); document.getElementById('lq').style.display='none'; }
+function visSel(el,i){
+  if(el.classList.contains('on')){ el.classList.remove('on'); visPicked=visPicked.filter(x=>x!==i); }
+  else if(visPicked.length<3){ el.classList.add('on'); visPicked.push(i); }
+  const card=document.getElementById('visCard');
+  if(visPicked.length===3){
+    document.getElementById('visTxt').textContent='It\'s been 90 days of daily reps on '+visPicked.map(x=>LIFEBOOK[x][1]).join(', ')+'. You\'re standing inside the result — feel what that version of you feels. Stay there 30 seconds per goal.';
+    card.style.display='block';
+  } else card.style.display='none';
+}
+function captureStep(){
+  const d=day(); const type=stepsArr()[step];
+  const val=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};
+  if(type==='gratitude') d.gratitude=[val('g0'),val('g1'),val('g2')];
+  if(type==='frog') d.oneThing=val('frogIn');
+  if(type==='vision') d.visionPicks=visPicked.slice();
+  if(type==='wins') d.wins=[val('w0'),val('w1'),val('w2')];
+  if(type==='tomorrow') d.tomorrow=val('tmrIn');
+  save();
+}
+function nextStep(){
+  clearInterval(breathTimer);
+  captureStep();
+  const steps=stepsArr();
+  if(step>=steps.length-1){ completeRun(); return; }
+  step++; renderStep();
+}
+function completeRun(){
+  const d=day();
+  if(runMode==='morning'){
+    if(!d.morningDone){
+      d.morningDone=true; S.sessions++;
+      if(S.lastPrimeDate!==todayKey()){
+        S.streak = (S.lastPrimeDate===yesterKey())? S.streak+1 : 1;
+        S.best=Math.max(S.best,S.streak);
+        S.lastPrimeDate=todayKey();
+      }
+      save();
+      award('morning',40,'🔥 Streak '+S.streak+'! Priming done · +40 XP');
+    }
+  } else {
+    if(!d.eveningDone){
+      d.eveningDone=true;
+      const wins=d.wins.filter(Boolean);
+      if(wins.length) S.evidence.unshift({date:todayKey(),text:wins.join(' · '),kind:'win'});
+      save();
+      award('evening',30,'🌙 Wind down done · +30 XP');
+    }
+  }
+  go('home');
+}
+
+/* ================= BODY: STACK ================= */
+function segSel(which){
+  ['stack','train','rec'].forEach(k=>{
+    document.getElementById('seg-'+k).classList.toggle('on',k===which);
+    document.getElementById('pane-'+k).style.display = k===which?'block':'none';
   });
 }
+function renderStack(){
+  const d=day();
+  const grp=(g,rem)=>{
+    const items=S.stack.filter(i=>i.group===g);
+    return `<div class="grouplbl"><span class="g">${g} ${g==='AM'?'· with breakfast':'· wind down'}</span><span class="rem">⏰ ${rem}</span></div>`+
+      items.map(i=>`<div class="stackitem"><div class="pill">${i.emoji}</div>
+        <div class="info"><h4>${esc(i.name)}</h4><p>${esc(i.detail)}</p></div>
+        <button class="take ${d.stackTaken[i.id]?'done':''}" onclick="takeItem('${i.id}')">${d.stackTaken[i.id]?'✓ Taken':'Taken'}</button>
+        <button class="del" onclick="delItem('${i.id}')">✕</button></div>`).join('');
+  };
+  document.getElementById('pane-stack').innerHTML =
+    grp('AM','7:00 AM') + grp('PM','8:30 PM') +
+    `<div class="addrow" onclick="document.getElementById('addForm').style.display='block';this.style.display='none';">＋ Add supplement · peptide · hormone</div>
+     <div class="addform" id="addForm">
+       <div class="frow"><input id="afName" placeholder="Name"/><input id="afDetail" placeholder="Dose / notes"/></div>
+       <div class="frow"><input id="afEmoji" placeholder="Emoji (💊)" style="max-width:90px;"/>
+         <select id="afGroup"><option value="AM">AM</option><option value="PM">PM</option></select></div>
+       <button class="fbtn" onclick="addItem()">Add to stack</button>
+     </div>
+     <div class="foot">Self-tracking only · Not medical advice · No dosing recommendations</div>`;
+}
+function takeItem(id){
+  const d=day(); d.stackTaken[id]=!d.stackTaken[id]; save();
+  const am=S.stack.filter(i=>i.group==='AM'), pm=S.stack.filter(i=>i.group==='PM');
+  if(am.length&&am.every(i=>d.stackTaken[i.id])) award('stack-am',15,'💊 AM stack done · +15 XP');
+  if(pm.length&&pm.every(i=>d.stackTaken[i.id])) award('stack-pm',15,'🌙 PM stack done · +15 XP');
+  renderStack(); renderHome();
+}
+function delItem(id){
+  if(!confirm('Remove this item from your stack?')) return;
+  S.stack=S.stack.filter(i=>i.id!==id); save(); renderStack();
+}
+function addItem(){
+  const v=id=>document.getElementById(id).value.trim();
+  const name=v('afName'); if(!name){ toast('Give it a name'); return; }
+  S.stack.push({id:'it-'+Math.random().toString(36).slice(2,8),emoji:v('afEmoji')||'💊',name,detail:v('afDetail'),group:document.getElementById('afGroup').value});
+  save(); renderStack();
+}
+
+/* ================= BODY: TRAINING ================= */
+function renderTrain(){
+  const now=new Date(); const dow=(now.getDay()+6)%7; // 0=Mon
+  const labels=['M','T','W','T','F','S','S'];
+  const cells=labels.map((l,i)=>{
+    const dt=new Date(now); dt.setDate(now.getDate()-dow+i);
+    const k=todayKey(dt); const hit=S.days[k]&&S.days[k].trained;
+    return `<div class="day ${hit?'hit':''} ${i===dow?'today':''}" onclick="toggleTrainDay('${k}')"><div class="dl">${l}</div><div class="dc">${hit?'✓':(i===dow?'·':'—')}</div></div>`;
+  }).join('');
+  const hitCount=labels.map((l,i)=>{const dt=new Date(now);dt.setDate(now.getDate()-dow+i);const k=todayKey(dt);return S.days[k]&&S.days[k].trained?1:0;}).reduce((a,b)=>a+b,0);
+  const wo=S.workouts[todayKey()]||[];
+  const totTut=wo.reduce((a,e)=>a+e.tut,0);
+  document.getElementById('pane-train').innerHTML =
+    `<div class="grouplbl"><span class="g">This week · 6 training days</span><span class="rem">${hitCount} / 6 done</span></div>
+     <div class="week">${cells}</div>
+     <div class="tut"><div class="lab">// Time under tension</div><h3>Today's quality volume</h3>
+       <div class="big">${totTut.toLocaleString()}<span style="font-size:15px;color:var(--dim);"> sec</span></div>
+       <div class="row"><span>Tempo default 3·1·2</span><span>${wo.length} exercise${wo.length===1?'':'s'}</span></div></div>` +
+    wo.map((e,i)=>`<div class="stackitem"><div class="pill">💪</div>
+      <div class="info"><h4>${esc(e.name)}</h4><p>${e.sets}×${e.reps} · ${e.weight} lb · tempo ${e.ecc}·${e.pause}·${e.con} · TUT ${e.tut}s</p></div>
+      <button class="del" onclick="delWo(${i})">✕</button></div>`).join('') +
+    `<div class="addrow" onclick="document.getElementById('woForm').style.display='block';this.style.display='none';">＋ Add exercise</div>
+     <div class="addform" id="woForm">
+       <div class="frow"><input id="woName" placeholder="Exercise"/><input id="woWeight" placeholder="lb" type="number" style="max-width:80px;"/></div>
+       <div class="frow"><input id="woSets" placeholder="Sets" type="number"/><input id="woReps" placeholder="Reps" type="number"/></div>
+       <div class="frow"><input id="woEcc" placeholder="Ecc s" type="number" value="3"/><input id="woPause" placeholder="Pause s" type="number" value="1"/><input id="woCon" placeholder="Con s" type="number" value="2"/></div>
+       <button class="fbtn" onclick="addWo()">Log exercise</button>
+     </div>
+     <div class="foot" style="font-family:'Fraunces',serif;font-style:italic;font-size:12px;letter-spacing:0;">"Momentum is not muscle. Control is the signal."</div>`;
+}
+function toggleTrainDay(k){
+  const dd=day(k); dd.trained=!dd.trained; save();
+  if(k===todayKey()&&dd.trained) award('train',25,'🏋️ Trained · +25 XP');
+  renderTrain(); renderHome();
+}
+function addWo(){
+  const n=id=>parseFloat(document.getElementById(id).value)||0;
+  const name=document.getElementById('woName').value.trim(); if(!name){ toast('Name the exercise'); return; }
+  const sets=n('woSets')||1, reps=n('woReps')||1, ecc=n('woEcc'), pause=n('woPause'), con=n('woCon');
+  const tut=Math.round(sets*reps*(ecc+pause+con));
+  const k=todayKey(); if(!S.workouts[k]) S.workouts[k]=[];
+  S.workouts[k].push({name,weight:n('woWeight'),sets,reps,ecc,pause,con,tut});
+  const dd=day(); if(!dd.trained){ dd.trained=true; award('train',25,'🏋️ Trained · +25 XP'); }
+  save(); renderTrain(); renderHome();
+}
+function delWo(i){ const k=todayKey(); S.workouts[k].splice(i,1); save(); renderTrain(); }
+
+/* ================= BODY: RECOVERY ================= */
+function renderRec(){
+  const r=rec(); const d=day();
+  const row=(key,emoji,name)=>{
+    const c=r[key];
+    return `<div class="recitem"><div class="top"><h4>${emoji} ${name}</h4>
+      <div style="display:flex;gap:8px;align-items:center;"><span class="cnt">${c}/5</span><button class="logbtn" onclick="recLog('${key}')">Log</button></div></div>
+      <div class="dots">${[0,1,2,3,4].map(i=>`<span class="rdot ${i<c?'f':''}"></span>`).join('')}</div></div>`;
+  };
+  const trio=(key,emoji,name)=>{
+    const t=d.trio[key];
+    return `<div class="duocard"><div class="e">${emoji}</div><h5>${name}</h5>
+      <div class="ampm"><span class="ap ${t.am?'on':''}" onclick="trioTap('${key}','am')">AM</span><span class="ap ${t.pm?'on':''}" onclick="trioTap('${key}','pm')">PM</span></div></div>`;
+  };
+  document.getElementById('pane-rec').innerHTML =
+    `<div class="grouplbl"><span class="g">Weekly · 5× targets</span><span class="rem">resets Mon</span></div>` +
+    row('sauna','🔥','Sauna')+row('cold','🧊','Cold plunge')+row('red','🔴','Red light') +
+    `<div class="grouplbl" style="margin-top:16px;"><span class="g">Daily · twice a day</span><span class="rem">AM + PM</span></div>
+     <div class="duo">${trio('pemf','🧲','PEMF')+trio('pulsetto','⚡','Pulsetto')+trio('tm','🧘','TM')}</div>
+     <div class="foot">Recovery is training. Log it like training.</div>`;
+}
+function recLog(key){
+  const r=rec();
+  if(r[key]>=5){ toast('🏆 Weekly target already hit'); return; }
+  r[key]++; save();
+  if(r[key]===5) toast('🏆 Weekly target hit!');
+  award('recov',20,'🧊 Recovery logged · +20 XP');
+  renderRec(); renderHome();
+}
+function trioTap(key,ap){
+  const t=day().trio[key]; t[ap]=!t[ap]; save();
+  const d=day();
+  if(d.trio.pemf.am&&d.trio.pulsetto.am&&d.trio.tm.am) award('trio-am',15,'☀️ AM trio done · +15 XP');
+  if(d.trio.pemf.pm&&d.trio.pulsetto.pm&&d.trio.tm.pm) award('trio-pm',15,'🌙 PM trio done · +15 XP');
+  renderRec(); renderHome();
+}
+
+/* ================= MIRROR ================= */
+const MIRROR_QS=[
+  'What did the man who built this life do that most people wouldn\'t?',
+  'What\'s one hard thing you\'ve already survived that proves you can handle today?',
+  'What would your kids say they admire about their dad?',
+  'What did you build this year that didn\'t exist last year?',
+  'Which promise to yourself have you actually kept — for years?',
+  'What would 25-year-old Pascal think if he saw your life today?',
+  'What\'s something difficult you did recently that you\'ve already stopped giving yourself credit for?',
+  'Who depends on you — and shows up better because you do?',
+  'What skill did you earn the hard way that you now make look easy?',
+  'When did you last do the right thing even though it cost you?',
+  'What part of your body of work will outlive the bad days?',
+  'What did you handle this month that would have broken an earlier version of you?',
+  'What do the people who love you see in you on the days you can\'t see it yourself?',
+  'Which fear did you walk through instead of around?',
+];
+function dayOfYear(){ const n=new Date(); return Math.floor((n-new Date(n.getFullYear(),0,0))/864e5); }
+function mirrorQ(){ return MIRROR_QS[dayOfYear()%MIRROR_QS.length]; }
+function renderMirror(){
+  const d=day();
+  document.getElementById('mirDayLbl').textContent='Today\'s question · '+todayKey();
+  document.getElementById('mirQ').textContent='"'+mirrorQ()+'"';
+  const btn=document.getElementById('lockBtn');
+  btn.textContent = d.mirrorDone ? 'Locked ✓ — see you tomorrow' : 'Lock it in the Evidence Locker · +20 XP';
+  btn.classList.toggle('locked',d.mirrorDone);
+  const y=S.evidence.find(e=>e.date===yesterKey()) || S.evidence[0];
+  const wc=document.getElementById('winCard');
+  if(y){ wc.style.display='block';
+    document.getElementById('winK').textContent = y.date===yesterKey()?'Yesterday you said':'You once said';
+    document.getElementById('winTxt').textContent='"'+y.text+'"';
+  } else wc.style.display='none';
+  document.getElementById('evCount').textContent=S.evidence.length+' entries';
+  document.getElementById('evList').innerHTML=S.evidence.slice(0,30).map(e=>
+    `<div class="evitem"><div class="d">${e.date}${e.kind==='win'?' · WINS':''}</div><p>${esc(e.text)}</p></div>`).join('')
+    || '<div class="foot">Your first entry starts the locker.</div>';
+}
+function lockEvidence(){
+  const d=day();
+  if(d.mirrorDone) return;
+  const txt=document.getElementById('mirA').value.trim();
+  if(!txt){ toast('Write one honest line first'); return; }
+  S.evidence.unshift({date:todayKey(),text:txt});
+  d.mirrorDone=true; save();
+  award('mirror',20,'🪞 Evidence saved · +20 XP');
+  document.getElementById('mirA').value='';
+  renderMirror();
+}
+
+/* ================= BOOT ================= */
+applyTheme();
+renderHome();
+setInterval(applyTheme, 60*1000);
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
 </body>
 </html>
