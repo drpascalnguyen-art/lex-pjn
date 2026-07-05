@@ -605,6 +605,43 @@ function SoundToggle({mode,playing,onToggle}){
     playing?"\uD83D\uDD0A":"\uD83D\uDD07",
     React.createElement("span",{style:{fontSize:10,letterSpacing:1,textTransform:"uppercase"}},playing?"On":"Off"));}
 
+// ─── LOCAL PROGRESS + COMMERCIALIZATION LAYER ──────────────────────────────────
+const STORAGE_KEY = "lex-pjn-progress-v1";
+function readProgress(){
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {sessions:0,streak:0,lastDate:null,lastMode:null}; }
+  catch(e){ return {sessions:0,streak:0,lastDate:null,lastMode:null}; }
+}
+function todayKey(){ return new Date().toISOString().slice(0,10); }
+function yesterdayKey(){ const d=new Date(); d.setDate(d.getDate()-1); return d.toISOString().slice(0,10); }
+function saveSession(mode){
+  const p=readProgress(); const t=todayKey();
+  const alreadyToday=p.lastDate===t;
+  const next={...p,sessions:(p.sessions||0)+1,lastDate:t,lastMode:mode,lastCompletedAt:new Date().toISOString()};
+  next.streak=alreadyToday?(p.streak||1):(p.lastDate===yesterdayKey()?((p.streak||0)+1):1);
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(next));
+  return next;
+}
+function CommercialPanel(){
+  return React.createElement("div",{style:{marginTop:28,maxWidth:760,width:"100%",display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:14}},
+    [
+      {k:"Private beta",v:"Built for Pascal first",d:"No account. No cloud sync. Your reflections stay on this device."},
+      {k:"Start Here",v:"Morning + evening protocol",d:"Use the suggested card, finish one full session, then repeat daily."},
+      {k:"Waitlist path",v:"Launch pending approval",d:"Payment, public name, privacy, and terms stay blocked until Pascal approves."}
+    ].map((x,i)=>React.createElement("div",{key:i,style:{padding:"18px 20px",borderRadius:14,background:i===1?"rgba(255,255,255,0.82)":"rgba(255,255,255,0.58)",border:"1px solid rgba(0,60,30,0.1)",boxShadow:"0 4px 20px rgba(0,40,20,0.06)"}},
+      React.createElement("div",{style:{fontSize:10,letterSpacing:3,textTransform:"uppercase",color:"#059669",marginBottom:8,fontWeight:700}},x.k),
+      React.createElement("div",{style:{fontSize:17,color:"#1A3328",fontWeight:700,marginBottom:6}},x.v),
+      React.createElement("div",{style:{fontSize:12,color:"#4D7160",lineHeight:1.65}},x.d))));
+}
+function ProgressPanel(){
+  const [p,setP]=useState(readProgress);
+  useEffect(()=>{const h=()=>setP(readProgress()); window.addEventListener("storage",h); return()=>window.removeEventListener("storage",h);},[]);
+  return React.createElement("div",{style:{marginTop:22,display:"flex",gap:12,flexWrap:"wrap",justifyContent:"center"}},
+    [["Sessions",p.sessions||0],["Streak",`${p.streak||0} day${(p.streak||0)===1?"":"s"}`],["Last",p.lastMode?`${p.lastMode} · ${p.lastDate}`:"Not started"]].map(([label,val])=>
+      React.createElement("div",{key:label,style:{minWidth:120,padding:"12px 16px",borderRadius:12,background:"rgba(255,255,255,0.55)",border:"1px solid rgba(0,60,30,0.08)",textAlign:"center"}},
+        React.createElement("div",{style:{fontSize:10,letterSpacing:2,textTransform:"uppercase",color:"#7A9E8C",marginBottom:4}},label),
+        React.createElement("div",{style:{fontSize:15,color:"#1A3328",fontWeight:700}},val))));
+}
+
 // ─── HOME SCREEN ────────────────────────────────────────────────────────────────
 function HomeScreen({onSelect}){
   const hour=new Date().getHours();const suggested=(hour>=5&&hour<14)?"morning":"evening";
@@ -612,7 +649,9 @@ function HomeScreen({onSelect}){
     React.createElement("div",{style:{textAlign:"center",marginBottom:48}},
       React.createElement("div",{style:{fontSize:10,letterSpacing:6,color:"#7A9E8C",textTransform:"uppercase",marginBottom:12}},"Lex \u00B7 PJN"),
       React.createElement("div",{style:{fontSize:38,fontWeight:700,color:"#1A3328",lineHeight:1.3}},`${getGreeting()}, Pascal`),
-      React.createElement("div",{style:{fontSize:15,color:"#4D7160",marginTop:12,fontStyle:"italic"}},formatDate())),
+      React.createElement("div",{style:{fontSize:15,color:"#4D7160",marginTop:12,fontStyle:"italic"}},formatDate()),
+      React.createElement("div",{style:{fontSize:13,color:"#2A4A3C",marginTop:16,lineHeight:1.7,maxWidth:620}},"A private daily priming system for high-performance biological practice leadership. Start with one complete protocol; the app tracks your local streak on this device only."),
+      React.createElement(ProgressPanel)),
     React.createElement("div",{style:{display:"flex",gap:24,maxWidth:700,width:"100%",flexWrap:"wrap",justifyContent:"center"}},
       // Morning
       React.createElement("div",{className:"mp-home-card",onClick:()=>onSelect("morning"),style:{flex:"1 1 280px",maxWidth:320,padding:"36px 32px",borderRadius:16,cursor:"pointer",background:"rgba(255,255,255,0.75)",border:suggested==="morning"?"2px solid rgba(5,150,105,0.4)":"1px solid rgba(0,60,30,0.1)",transition:"all 0.3s",position:"relative",overflow:"hidden",boxShadow:"0 4px 20px rgba(0,40,20,0.08)"}},
@@ -628,7 +667,8 @@ function HomeScreen({onSelect}){
         React.createElement("div",{style:{fontSize:20,fontWeight:700,color:"#E8F5EC",marginBottom:8}},"Evening Wind Down"),
         React.createElement("div",{style:{fontSize:13,color:"#6A9E7A",lineHeight:1.7}},"7 steps \u00B7 Clear mental load, meditate, review wins, design tomorrow, rest with clarity"),
         React.createElement("div",{style:{marginTop:20,fontSize:12,color:"#4ADE80",letterSpacing:2,textTransform:"uppercase",fontWeight:600}},"Start \u2192"))),
-    React.createElement("div",{style:{marginTop:48,fontSize:11,color:"#7A9E8C",letterSpacing:1}},"Choose your protocol to begin"));}
+    React.createElement(CommercialPanel),
+    React.createElement("div",{style:{marginTop:30,fontSize:11,color:"#7A9E8C",letterSpacing:1,textAlign:"center",lineHeight:1.7}},"Choose your protocol to begin · Privacy-first local prototype · Not medical advice"));}
 
 // ─── PROTOCOL ENGINE ────────────────────────────────────────────────────────────
 function ProtocolEngine({mode,onHome}){
@@ -668,7 +708,7 @@ function ProtocolEngine({mode,onHome}){
     else{if(isMorning)startMorningAmbient();else startEveningAmbient();setSoundPlaying(true);}
   };
 
-  const finishProtocol=()=>{setCompletedSteps(prev=>{const n=new Set(prev);n.add(steps.length-1);return n;});setCompleted(true);};
+  const finishProtocol=()=>{setCompletedSteps(prev=>{const n=new Set(prev);n.add(steps.length-1);return n;});saveSession(mode);setCompleted(true);};
   const resetProtocol=()=>{setCompleted(false);setCurrentStep(0);setHealth({});setWin1("");setWin2("");setWin3("");setNeedleInput("");setDelegateInput("");setContentInput("");setEveningWinText("");setMentalDump("");setTom1("");setTom2("");setTom3("");setRelationshipNote("");setSessionElapsed(0);setCompletedSteps(new Set());};
   const goHome=()=>{stopAmbient();setSoundPlaying(false);onHome();};
 
