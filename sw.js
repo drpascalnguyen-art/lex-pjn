@@ -1,7 +1,7 @@
 // Pascal's Priming App — service worker.
 // Network-first for the page (so updates land immediately when online),
 // cache fallback so the app still opens with no connection.
-const CACHE = 'ppa-v1';
+const CACHE = 'ppa-v2';
 const ASSETS = ['./index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon.svg', './apple-touch-icon.png'];
 
 self.addEventListener('install', (event) => {

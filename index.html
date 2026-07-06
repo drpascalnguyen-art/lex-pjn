@@ -33,8 +33,33 @@
   }
   body{background:var(--bg);font-family:'Space Grotesk',sans-serif;color:var(--ink);min-height:100vh;min-height:100dvh;transition:background .4s;}
   textarea,input,select{-webkit-user-select:text;user-select:text;}
-  #app{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;background:var(--bg-grad);position:relative;transition:background .4s;}
-  .screen{display:none;padding:calc(14px + env(safe-area-inset-top)) 0 calc(110px + env(safe-area-inset-bottom));min-height:100vh;min-height:100dvh;}
+  #app{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;position:relative;transition:background .4s;}
+  .screen{display:none;padding:calc(14px + env(safe-area-inset-top)) 0 calc(110px + env(safe-area-inset-bottom));min-height:100vh;min-height:100dvh;position:relative;z-index:1;}
+
+  /* ===== FOREST SCENE ===== */
+  .scene{position:fixed;top:0;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:0;pointer-events:none;overflow:hidden;}
+  .scene .sky{position:absolute;inset:0;background:linear-gradient(180deg,#9fd4f2 0%,#cfeafa 30%,#eaf5e4 60%,#ddebc9 100%);transition:opacity .6s;}
+  html.night .scene .sky{background:linear-gradient(180deg,#0c1524 0%,#132238 40%,#162830 70%,#142319 100%);}
+  .scene .sun{position:absolute;top:5%;right:10%;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,#fffbe0 0%,#ffeaa6 30%,rgba(255,234,166,0) 70%);filter:blur(2px);}
+  html.night .scene .sun{display:none;}
+  .scene .moon{display:none;position:absolute;top:6%;right:13%;width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 38% 38%,#f7f9f2,#c9d4cc 75%);box-shadow:0 0 46px 14px rgba(214,232,255,.28);}
+  html.night .scene .moon{display:block;}
+  .scene .stars{display:none;position:absolute;inset:0 0 40% 0;
+    background-image:radial-gradient(1.5px 1.5px at 12% 22%,#fff,transparent),radial-gradient(1px 1px at 28% 10%,#fff,transparent),radial-gradient(1.5px 1.5px at 44% 30%,#dfeaff,transparent),radial-gradient(1px 1px at 60% 14%,#fff,transparent),radial-gradient(1.5px 1.5px at 71% 26%,#fff,transparent),radial-gradient(1px 1px at 84% 8%,#dfeaff,transparent),radial-gradient(1px 1px at 92% 34%,#fff,transparent),radial-gradient(1px 1px at 8% 44%,#fff,transparent),radial-gradient(1.5px 1.5px at 36% 48%,#fff,transparent),radial-gradient(1px 1px at 55% 42%,#dfeaff,transparent);}
+  html.night .scene .stars{display:block;}
+  .scene svg{position:absolute;bottom:0;left:0;width:100%;height:120px;}
+  .scene .tback{opacity:.5;height:150px;}
+  .scene .tback polygon{fill:#7fae7d;transition:fill .5s;}
+  html.night .scene .tback polygon{fill:#1b382a;}
+  .scene .tfront polygon{fill:#38754e;transition:fill .5s;}
+  html.night .scene .tfront polygon{fill:#0e2519;}
+
+  /* ===== MEDITATION ===== */
+  .meddial{width:214px;height:214px;border-radius:50%;margin:20px auto 8px;display:grid;place-items:center;background:conic-gradient(var(--violet) 0deg,var(--card2) 0deg);box-shadow:var(--shadow);}
+  .medin{width:182px;height:182px;border-radius:50%;background:var(--card);display:grid;place-items:center;}
+  .medtime{font-family:'Fraunces',serif;font-size:46px;font-weight:600;line-height:1;}
+  .medsub{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:6px;}
+  .medreset{width:100%;margin-top:10px;background:none;border:none;color:var(--dim);font-size:13px;font-weight:600;cursor:pointer;font-family:'Space Grotesk';padding:8px;}
   .screen.active{display:block;}
   .pad{padding:0 20px;}
 
@@ -216,6 +241,14 @@
 </head>
 <body>
 <div id="app">
+  <div class="scene">
+    <div class="sky"></div>
+    <div class="sun"></div>
+    <div class="moon"></div>
+    <div class="stars"></div>
+    <svg class="tback" viewBox="0 0 480 150" preserveAspectRatio="none"><polygon points="0,150 0,80 14,38 28,80 36,60 50,18 64,60 74,74 88,30 102,74 112,56 126,12 140,56 152,70 166,26 180,70 190,52 204,8 218,52 230,68 244,22 258,68 268,50 282,14 296,50 308,66 322,28 336,66 346,54 360,10 374,54 386,70 400,24 414,70 424,52 438,16 452,52 464,74 480,40 480,150"/></svg>
+    <svg class="tfront" viewBox="0 0 480 120" preserveAspectRatio="none"><polygon points="0,120 0,70 18,20 36,70 48,48 66,4 84,48 96,64 114,16 132,64 144,42 162,0 180,42 192,60 210,12 228,60 240,44 258,6 276,44 288,62 306,18 324,62 336,46 354,2 372,46 384,64 402,14 420,64 432,48 450,10 468,48 480,66 480,120"/></svg>
+  </div>
   <div class="toast" id="toast"></div>
 
   <!-- HOME -->
@@ -256,6 +289,11 @@
         <div class="dot">🌙</div>
         <div class="txt"><h4>Evening Wind Down</h4><p>wins · clear the load · design tomorrow</p></div>
         <div class="cta" id="eveCta">→</div>
+      </div>
+      <div class="mod" style="background:linear-gradient(110deg,var(--violet-soft) 0%,var(--card) 65%);" onclick="go('med')">
+        <div class="dot">🧘</div>
+        <div class="txt"><h4>TM Meditation</h4><p>2 warm-up · 20 meditate · 2 wind-down</p></div>
+        <div class="cta" id="medCta">→</div>
       </div>
       <div class="sectitle">// Hydration</div>
       <div class="hydro">
@@ -311,6 +349,32 @@
       <div id="evList"></div>
     </div>
     <div class="foot">Your own words, resurfaced when the self-talk turns dark.</div>
+  </section>
+
+  <!-- MEDITATE -->
+  <section class="screen" id="s-med">
+    <div class="run-top">
+      <button class="back" onclick="go('home')">←</button>
+      <div class="prog"><i id="medBar" style="width:0%"></i></div>
+      <div class="stepno">2 · 20 · 2</div>
+    </div>
+    <div class="run-body">
+      <div class="kick" id="medPhase">Ready</div>
+      <h2>TM Meditation</h2>
+      <div class="meddial" id="medDial"><div class="medin"><div style="text-align:center;"><div class="medtime" id="medTime">2:00</div><div class="medsub" id="medSub">warm-up</div></div></div></div>
+      <p class="desc">Bells mark each transition. Keep the screen on — iPhone pauses timers when locked.</p>
+      <div class="sectitle" style="justify-content:center;">// Sounds</div>
+      <div class="chips">
+        <span class="chip on" id="snd-off" onclick="sndSel('off')">🔇 Off</span>
+        <span class="chip" id="snd-nature" onclick="sndSel('nature')">🌿 Nature</span>
+        <span class="chip" id="snd-med" onclick="sndSel('med')">🕉️ Meditation</span>
+        <span class="chip" id="snd-healing" onclick="sndSel('healing')">🎵 Healing</span>
+      </div>
+    </div>
+    <div class="run-actions">
+      <button class="nextbtn" id="medBtn" onclick="medToggle()" style="background:linear-gradient(100deg,var(--violet),#5b3fb8);box-shadow:0 10px 24px rgba(124,92,214,.3);">Begin meditation</button>
+      <button class="medreset" onclick="medReset()">Reset timer</button>
+    </div>
   </section>
 
   <!-- NAV -->
@@ -430,6 +494,8 @@ function renderHome(){
   document.getElementById('mirHomeGo').textContent = d.mirrorDone?'Answered ✓':'Answer →';
   document.getElementById('mornCta').textContent=d.morningDone?'✓':'→';
   document.getElementById('eveCta').textContent=d.eveningDone?'✓':'→';
+  const tmS=d.trio.tm;
+  document.getElementById('medCta').textContent = tmS.am&&tmS.pm?'✓✓': tmS.am?'AM ✓': tmS.pm?'PM ✓':'→';
   const left=QUESTS.filter(q=>!q.done()).reduce((a,q)=>a+q.xp,0);
   document.getElementById('qLeft').textContent=left+' XP left';
   document.getElementById('questList').innerHTML=QUESTS.map((q,i)=>
@@ -451,7 +517,7 @@ function addWater(){
 }
 
 /* ================= NAV ================= */
-const screens={home:'s-home',run:'s-run',body:'s-body',mirror:'s-mirror'};
+const screens={home:'s-home',run:'s-run',body:'s-body',mirror:'s-mirror',med:'s-med'};
 const navs={home:'nav-home',run:'nav-run',body:'nav-body',mirror:'nav-mirror'};
 function go(k){
   clearInterval(breathTimer);
@@ -463,6 +529,7 @@ function go(k){
   if(k==='home') renderHome();
   if(k==='body'){ renderStack(); renderTrain(); renderRec(); }
   if(k==='mirror') renderMirror();
+  if(k==='med') renderMed();
 }
 
 /* ================= LIFEBOOK / RUNNER ================= */
@@ -833,6 +900,141 @@ function lockEvidence(){
   award('mirror',20,'🪞 Evidence saved · +20 XP');
   document.getElementById('mirA').value='';
   renderMirror();
+}
+
+/* ================= SOUND ENGINE ================= */
+const Snd={ctx:null,nodes:[],type:'off',chirpTimer:null,
+  ac(){ if(!this.ctx) this.ctx=new (window.AudioContext||window.webkitAudioContext)(); if(this.ctx.state==='suspended') this.ctx.resume(); return this.ctx; },
+  stop(){ this.nodes.forEach(n=>{ try{n.stop&&n.stop();}catch(e){} try{n.disconnect&&n.disconnect();}catch(e){} }); this.nodes=[]; clearInterval(this.chirpTimer); this.type='off'; },
+  start(type){
+    this.stop();
+    if(type==='off'){ updateSndUI(); return; }
+    const ctx=this.ac(); this.type=type;
+    const master=ctx.createGain(); master.gain.setValueAtTime(0.0001,ctx.currentTime);
+    master.gain.exponentialRampToValueAtTime(0.16,ctx.currentTime+2);
+    master.connect(ctx.destination); this.nodes.push(master); this.master=master;
+    if(type==='nature'){
+      const buf=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate); const dd=buf.getChannelData(0); let last=0;
+      for(let i=0;i<dd.length;i++){ const w=Math.random()*2-1; last=(last+0.02*w)/1.02; dd[i]=last*3.5; }
+      const src=ctx.createBufferSource(); src.buffer=buf; src.loop=true;
+      const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=550;
+      const g=ctx.createGain(); g.gain.value=0.6;
+      src.connect(lp); lp.connect(g); g.connect(master); src.start();
+      this.nodes.push(src,lp,g);
+      this.chirpTimer=setInterval(()=>{ if(this.type==='nature'&&Math.random()<0.7) this.chirp(master); },2400);
+    }
+    if(type==='med'){
+      [136.1,204.15].forEach((f,i)=>{
+        const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=f;
+        const g=ctx.createGain(); g.gain.value=i?0.22:0.45;
+        const lfo=ctx.createOscillator(); lfo.frequency.value=0.07+0.04*i;
+        const lg=ctx.createGain(); lg.gain.value=0.1;
+        lfo.connect(lg); lg.connect(g.gain);
+        o.connect(g); g.connect(master); o.start(); lfo.start();
+        this.nodes.push(o,g,lfo,lg);
+      });
+    }
+    if(type==='healing'){
+      [[528,0.32],[396,0.16]].forEach(pair=>{
+        const f=pair[0], v=pair[1];
+        const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=f;
+        const o2=ctx.createOscillator(); o2.type='sine'; o2.frequency.value=f+1.5;
+        const g=ctx.createGain(); g.gain.value=v;
+        const g2=ctx.createGain(); g2.gain.value=v*0.55;
+        o.connect(g); g.connect(master); o2.connect(g2); g2.connect(master);
+        o.start(); o2.start();
+        this.nodes.push(o,o2,g,g2);
+      });
+    }
+    updateSndUI();
+  },
+  chirp(master){
+    const ctx=this.ctx; if(!ctx) return; const t=ctx.currentTime;
+    const o=ctx.createOscillator(); const g=ctx.createGain();
+    const f0=1800+Math.random()*1600;
+    o.frequency.setValueAtTime(f0,t);
+    o.frequency.exponentialRampToValueAtTime(f0*(1.2+Math.random()*0.5),t+0.08);
+    o.frequency.exponentialRampToValueAtTime(f0*0.9,t+0.16);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(0.09,t+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+0.22);
+    o.connect(g); g.connect(master); o.start(t); o.stop(t+0.25);
+  },
+  bell(){
+    const ctx=this.ac(); const t=ctx.currentTime;
+    [523.25,659.25,783.99].forEach((f,i)=>{
+      const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=f;
+      const g=ctx.createGain();
+      g.gain.setValueAtTime(0.0001,t);
+      g.gain.exponentialRampToValueAtTime(0.22/(i+1),t+0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+2.4);
+      o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t+2.5);
+    });
+  }
+};
+function sndSel(type){ Snd.start(type); }
+function updateSndUI(){
+  ['off','nature','med','healing'].forEach(k=>{
+    const el=document.getElementById('snd-'+k);
+    if(el) el.classList.toggle('on',Snd.type===k||(k==='off'&&Snd.type==='off'));
+  });
+}
+
+/* ================= MEDITATION TIMER ================= */
+const MED_PHASES=[['Warm-up',120,'warm-up'],['Meditation',1200,'meditate'],['Wind-down',120,'wind-down']];
+const MED_TOTAL=MED_PHASES.reduce((a,p)=>a+p[1],0);
+let med={running:false,phase:0,remain:MED_PHASES[0][1],elapsed:0,timer:null,wakeLock:null};
+function fmtT(s){ return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+function medToggle(){ med.running?medPause():medStart(); }
+function medStart(){
+  if(med.running) return;
+  med.running=true;
+  Snd.bell();
+  med.timer=setInterval(medTick,1000);
+  try{ if(navigator.wakeLock) navigator.wakeLock.request('screen').then(l=>{med.wakeLock=l;}).catch(()=>{}); }catch(e){}
+  renderMed();
+}
+function medPause(){
+  med.running=false; clearInterval(med.timer);
+  if(med.wakeLock){ try{med.wakeLock.release();}catch(e){} med.wakeLock=null; }
+  renderMed();
+}
+function medReset(){ medPause(); med.phase=0; med.elapsed=0; med.remain=MED_PHASES[0][1]; renderMed(); }
+function medTick(){
+  med.remain--; med.elapsed++;
+  if(med.remain<=0){
+    med.phase++;
+    if(med.phase>=MED_PHASES.length){ medComplete(); return; }
+    Snd.bell(); med.remain=MED_PHASES[med.phase][1];
+    renderMed(); return;
+  }
+  renderMedTime();
+}
+function medComplete(){
+  med.phase=0; med.elapsed=0; med.remain=MED_PHASES[0][1];
+  medPause(); Snd.bell();
+  const ap=new Date().getHours()<15?'am':'pm';
+  const t=day().trio.tm;
+  if(!t[ap]){ t[ap]=true; save(); }
+  const d=day();
+  if(d.trio.pemf[ap]&&d.trio.pulsetto[ap]&&d.trio.tm[ap]) award('trio-'+ap,15,(ap==='am'?'☀️':'🌙')+' '+ap.toUpperCase()+' trio done · +15 XP');
+  award('med-'+ap,15,'🧘 24 minutes. Mind maintained · +15 XP');
+  renderMed(); renderHome();
+}
+function renderMed(){
+  const phaseEl=document.getElementById('medPhase'); if(!phaseEl) return;
+  const p=MED_PHASES[Math.min(med.phase,MED_PHASES.length-1)];
+  phaseEl.textContent = med.running ? ('Phase '+(med.phase+1)+' · '+p[0]) : (med.elapsed>0?'Paused · '+p[0]:'Ready');
+  document.getElementById('medSub').textContent=p[2];
+  document.getElementById('medBtn').textContent = med.running?'Pause':(med.elapsed>0?'Resume':'Begin meditation');
+  renderMedTime(); updateSndUI();
+}
+function renderMedTime(){
+  const tEl=document.getElementById('medTime'); if(!tEl) return;
+  tEl.textContent=fmtT(med.remain);
+  const frac=med.elapsed/MED_TOTAL;
+  document.getElementById('medDial').style.background=`conic-gradient(var(--violet) ${Math.round(frac*360)}deg, var(--card2) ${Math.round(frac*360)}deg)`;
+  document.getElementById('medBar').style.width=(frac*100)+'%';
 }
 
 /* ================= BOOT ================= */
