@@ -1,6 +1,6 @@
 # AI Dentist — Master Session Save — 2026-07-15
 
-Source: Claude Code session (remote). For Obsidian: file under `03 - Projects / AI Dental Institute`.
+Source: Claude Code session (remote), updated 7/16. For Obsidian: file under `03 - Projects / AI Dental Institute`.
 
 ---
 
@@ -19,9 +19,9 @@ Source: Claude Code session (remote). For Obsidian: file under `03 - Projects / 
 4. **Load course into Skool Classroom — OPEN.** 6 modules, videos + PDFs; Google Form quiz per module (Skool has no native quizzes; PACE self-instruction requires them). Founders 2-min intro: YouTube Unlisted → Module 0 first lesson + pinned welcome post.
 5. **CE certificate flow — OPEN.** Manual to start: member passes quizzes → email certificate PDF with CE Approved provider language (Provider ID #365798, joint-provider statement). Use new seal.
 6. **Client-journey QA — OPEN.** Incognito buy-through: pay → access granted → every module opens → videos play → PDFs open → quiz works. Log blockers vs cosmetic.
-7. **Pricing/tiers — WAITING ON JENN.** 15 Ps 3-tier copy sent 4/13, never approved. Question: tiers as membership levels + monthly price.
+7. **Pricing — DECIDED 7/16 by Pascal: $79/month.** (Correction: pricing is Pascal's call, not a Jenn gate. Jenn's pending items are Mineral Revival only.)
 8. **Publicity language — HALF DONE** (logo locked). Update publicity draft to new title; AGD-compliant. **No public CE-credit claims until item 2 lands** — then add the "10.5 CE hours" line.
-9. **Outreach emails — WAITING ON JENN** (go/edit/no-go on the 3 templates from 4/13; Mady's playbook from 4/9). Send after QA passes.
+9. **Outreach emails — READY, Pascal's call** (3 templates from 4/13 + Mady's playbook from 4/9; Jenn review dependency dropped 7/16). Send after QA passes.
 10. **SOP Store decision — OPEN.** Fold SOP/template products into Skool (resources module or upsell) or park explicitly.
 
 **Immediate order:** Sandra nudge → Skool payouts → Jenn price → load modules → certificate template → QA → outreach.
