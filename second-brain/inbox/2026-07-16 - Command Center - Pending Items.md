@@ -5,9 +5,9 @@ File under: Life Command Center / Active Lanes. Source of truth: `ai-dentist/MAS
 ## AI Dentist — launch (lane: business)
 
 **Today (7/16):**
-- [ ] #1 Send Sandra the follow-up email — receipt of signed JP agreement + approval form status + confirm title "AI Practice Systems for Dentists" (ready-to-send text in master save §4) — 5 min
-- [ ] #2 Skool → Payouts: connect YOUR bank/EIN (have: PJN Dental Education legal details, account + routing) — 10 min
-- [ ] #3 Skool → Pricing: create $79/month membership — 5 min
+- [ ] #1 Send Sandra follow-up — IN PREP: Jarvis tasked with creating the Gmail draft (incl. signed PDF from 7/9 Sent mail); Pascal reviews + sends
+- [x] #2 Skool → Payouts: DONE 7/16 (Pascal's own account connected)
+- [x] #3 Skool → Pricing: DONE 7/16 — $79/month live
 
 **This week:**
 - [ ] #4 Skool remaining settings: Privacy=Private · membership questions (certificate name + AGD #) · About page copy (in chat/master save) — 20 min
