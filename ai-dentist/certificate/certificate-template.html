@@ -1,0 +1,133 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CE Certificate — AI Practice Systems for Dentists</title>
+<style>
+  @page { size: 11in 8.5in; margin: 0; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    width: 11in; height: 8.5in;
+    background: #FCFBF6;
+    font-family: "Liberation Serif", "Iowan Old Style", Palatino, Georgia, serif;
+    color: #1C2420;
+    position: relative;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .frame {
+    position: absolute; inset: 0.32in;
+    border: 2.5px solid #1E4D3B;
+  }
+  .frame-inner {
+    position: absolute; inset: 0.40in;
+    border: 1px solid #A8894F;
+  }
+  .content {
+    position: absolute; inset: 0.75in 1.1in;
+    text-align: center;
+  }
+  .provider-line {
+    font-size: 12.5px; letter-spacing: 4px; color: #1E4D3B;
+    text-transform: uppercase; margin: 0.12in 0 0;
+  }
+  .seal { margin-top: 0.14in; }
+  h1 {
+    font-size: 34px; font-weight: 600; letter-spacing: 3px;
+    margin: 0.16in 0 0; color: #1C2420; text-transform: uppercase;
+  }
+  .certifies { font-size: 15px; color: #5A6660; margin: 0.14in 0 0; font-style: italic; }
+  .name {
+    font-size: 30px; margin: 0.10in auto 0; padding-bottom: 6px;
+    width: 6.2in; border-bottom: 1px solid #A8894F; color: #1E4D3B;
+  }
+  .completed { font-size: 15px; color: #5A6660; margin: 0.12in 0 0; font-style: italic; }
+  .course {
+    font-size: 24px; font-weight: 600; color: #1E4D3B; margin: 0.06in 0 0;
+  }
+  .details { font-size: 14px; margin: 0.10in 0 0; letter-spacing: 0.5px; }
+  .details b { color: #1E4D3B; }
+  .sigrow {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin: 0.34in 0.3in 0;
+  }
+  .sig { width: 2.9in; text-align: center; font-size: 13px; color: #5A6660; }
+  .sig .line { border-bottom: 1px solid #1C2420; height: 0.42in; margin-bottom: 6px; }
+  .sig .who { font-size: 13.5px; color: #1C2420; }
+  .pace {
+    position: absolute; left: 1.0in; right: 1.0in; bottom: 0.55in;
+    font-size: 9.5px; line-height: 1.45; color: #5A6660; text-align: center;
+  }
+  .draft {
+    position: absolute; top: 3.6in; left: 0; right: 0;
+    text-align: center;
+    font-size: 64px; letter-spacing: 14px; font-weight: 700;
+    color: rgba(168, 137, 79, 0.18);
+    transform: rotate(-14deg);
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+  <div class="frame"></div>
+  <div class="frame-inner"></div>
+
+  <!-- DELETE THIS ONE ELEMENT the day CE Approved confirms course approval -->
+  <div class="draft">Draft &middot; Pending Approval</div>
+
+  <div class="content">
+    <p class="provider-line">PJN Dental Education &middot; AI Dental Institute</p>
+
+    <div class="seal">
+      <svg width="118" height="118" viewBox="0 0 200 200" aria-label="PJN Dental Education seal">
+        <circle cx="100" cy="100" r="96" fill="none" stroke="#1E4D3B" stroke-width="3"/>
+        <circle cx="100" cy="100" r="88" fill="none" stroke="#A8894F" stroke-width="1"/>
+        <circle cx="100" cy="100" r="62" fill="none" stroke="#1E4D3B" stroke-width="1.5"/>
+        <defs><path id="arcC" d="M 100,100 m -75,0 a 75,75 0 1,1 150,0 a 75,75 0 1,1 -150,0"/></defs>
+        <text font-size="13.5" letter-spacing="3.5" fill="#1E4D3B" font-family="Liberation Serif, Palatino, Georgia, serif">
+          <textPath href="#arcC" startOffset="0%">PJN DENTAL EDUCATION &#183; PORTLAND OREGON &#183;</textPath>
+        </text>
+        <text x="100" y="110" text-anchor="middle" font-size="42" font-weight="600" letter-spacing="2" fill="#1E4D3B" font-family="Liberation Serif, Palatino, Georgia, serif">PJN</text>
+        <text x="100" y="130" text-anchor="middle" font-size="9" letter-spacing="2.5" fill="#A8894F" font-family="Liberation Serif, Palatino, Georgia, serif">EST &#183; MMXXVI</text>
+      </svg>
+    </div>
+
+    <h1>Certificate of Completion</h1>
+
+    <p class="certifies">This certifies that</p>
+    <div class="name">{{PARTICIPANT_NAME}}, {{CREDENTIALS}}</div>
+
+    <p class="completed">has successfully completed the continuing education activity</p>
+    <p class="course">AI Practice Systems for Dentists</p>
+
+    <p class="details">
+      <b>{{CE_HOURS}} CE Hours</b> &nbsp;&middot;&nbsp; Self-Instruction (Online, On-Demand)
+      &nbsp;&middot;&nbsp; AGD Subject Code 550<br>
+      Date of Completion: <b>{{COMPLETION_DATE}}</b>
+      &nbsp;&middot;&nbsp; AGD Member # (if applicable): {{AGD_NUMBER}}
+    </p>
+
+    <div class="sigrow">
+      <div class="sig">
+        <div class="line"></div>
+        <div class="who">Pascal Nguyen, DMD, NMD</div>
+        Instructor &middot; PJN Dental Education
+      </div>
+      <div class="sig">
+        <div class="line"></div>
+        <div class="who">Sandra S. Berger, RDH, BS</div>
+        Program Provider &middot; CE Approved
+      </div>
+    </div>
+  </div>
+
+  <p class="pace">
+    This activity has been planned and implemented in accordance with the standards of the
+    Academy of General Dentistry Program Approval for Continuing Education (PACE) through the
+    Joint Program Provider approval of PJN Dental Education and CE Approved. CE Approved is
+    approved for awarding FAGD/MAGD credit. Approval does not imply acceptance by any regulatory
+    authority or AGD endorsement. CE Approved Provider ID #365798 &middot; Approval period:
+    9/1/2015 &ndash; 8/31/2027 &middot; Program Provider: CE Approved &middot; sandra@ceapproved.com &middot; 732-492-2733
+  </p>
+</body>
+</html>

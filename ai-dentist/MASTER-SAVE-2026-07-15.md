@@ -1,6 +1,6 @@
 # AI Dentist — Master Session Save — 2026-07-15
 
-Source: Claude Code session (remote). For Obsidian: file under `03 - Projects / AI Dental Institute`.
+Source: Claude Code session (remote), updated 7/16. For Obsidian: file under `03 - Projects / AI Dental Institute`.
 
 ---
 
@@ -14,21 +14,21 @@ Source: Claude Code session (remote). For Obsidian: file under `03 - Projects / 
 ## 2. Go-live checklist (status as of 7/15)
 
 1. **Sign + send JP agreement to Sandra — DONE 7/9** (signature verified 7/15).
-2. **CE course approval form — OPEN.** Nudge Sandra: confirm receipt of signed agreement + form status + corrected title "AI Practice Systems for Dentists" (original 5/22 submission used old title "AI Operations for Biological Dentistry"; $630 fee paid 6/1, invoice #7159).
+2. **CE course approval form — OPEN.** Nudge Sandra: confirm receipt of signed agreement + form status + title "AI Practice Systems for Dentists" (original 5/22 submission used old title "AI Operations for Biological Dentistry"; $630 fee paid 6/1, invoice #7159).
 3. **Skool setup — IN PROGRESS.** Order: General (name/URL/description) → Privacy=Private → Payouts (Pascal's bank/EIN) → Pricing (waiting on Jenn) → membership questions (add: name for CE certificate + AGD/license number) → About page.
 4. **Load course into Skool Classroom — OPEN.** 6 modules, videos + PDFs; Google Form quiz per module (Skool has no native quizzes; PACE self-instruction requires them). Founders 2-min intro: YouTube Unlisted → Module 0 first lesson + pinned welcome post.
-5. **CE certificate flow — OPEN.** Manual to start: member passes quizzes → email certificate PDF with CE Approved provider language (Provider ID #365798, joint-provider statement). Use new seal.
+5. **CE certificate flow — TEMPLATE BUILT 7/16** (`ai-dentist/certificate/`): landscape letter PDF, seal, PACE language, signature lines, DRAFT watermark to delete on approval. Remaining: fill per-member fields + email on completion. Manual to start: member passes quizzes → email certificate PDF with CE Approved provider language (Provider ID #365798, joint-provider statement). Use new seal.
 6. **Client-journey QA — OPEN.** Incognito buy-through: pay → access granted → every module opens → videos play → PDFs open → quiz works. Log blockers vs cosmetic.
-7. **Pricing/tiers — WAITING ON JENN.** 15 Ps 3-tier copy sent 4/13, never approved. Question: tiers as membership levels + monthly price.
+7. **Pricing — DECIDED 7/16 by Pascal: $79/month.** (Correction: pricing is Pascal's call, not a Jenn gate. Jenn's pending items are Mineral Revival only.)
 8. **Publicity language — HALF DONE** (logo locked). Update publicity draft to new title; AGD-compliant. **No public CE-credit claims until item 2 lands** — then add the "10.5 CE hours" line.
-9. **Outreach emails — WAITING ON JENN** (go/edit/no-go on the 3 templates from 4/13; Mady's playbook from 4/9). Send after QA passes.
+9. **Outreach emails — READY, Pascal's call** (3 templates from 4/13 + Mady's playbook from 4/9; Jenn review dependency dropped 7/16). Send after QA passes.
 10. **SOP Store decision — OPEN.** Fold SOP/template products into Skool (resources module or upsell) or park explicitly.
 
 **Immediate order:** Sandra nudge → Skool payouts → Jenn price → load modules → certificate template → QA → outreach.
 
 ## 3. Course facts (as submitted to CE Approved)
 
-- Title: **AI Practice Systems for Dentists** (corrected from "AI Operations for Biological Dentistry")
+- Title: **AI Practice Systems for Dentists** — FINAL (7/16, option A). Decision: rename all course materials/Skool to match the title already on file with CE Approved (5/25 correction), instead of changing paperwork. Codex tasked with the renames (old titles to purge: "AI Operations for the Modern Dentist", "AI Operations for Biological Dentistry"). No title clause needed in Sandra email.
 - 6 modules, 10.5 CE hours (1.75 each), online self-paced, video + PDF + end-of-module quiz
 - AGD subject code 550 (Practice Management and Human Relations)
 - Provider: CE Approved (Sandra Berger, sandra@ceapproved.com, 732-492-2733; asst. Izabelle). Joint provider: PJN Dental Education / AI Dental Institute. Provider ID #365798, approval period 9/1/2015–8/31/2027.
@@ -40,7 +40,7 @@ Source: Claude Code session (remote). For Obsidian: file under `03 - Projects / 
 > **To:** sandra@ceapproved.com · **Cc:** izabelle@ceapproved.com
 > **Subject:** Following up — Joint Provider Agreement + course approval form
 >
-> Hi Sandra — following up on the Joint Provider agreement I sent July 9 (signed copy attached again for convenience). Could you confirm receipt, and let me know the status of the course approval form? I want to make sure it reflects the corrected title, "AI Practice Systems for Dentists." *(If module count/hours changed, add: "One update: the final course build is now X modules / Y total CE hours.")* Thank you! — Pascal Nguyen, DMD, NMD, PJN Dental Education
+> Hi Sandra — following up on the Joint Provider agreement I sent July 9 (signed copy attached again for convenience). Could you confirm receipt, and let me know the status of the course approval form? Please confirm it carries the corrected title from my May 25 email: "AI Practice Systems for Dentists." *(If module count/hours changed, add: "The final course build is now X modules / Y total CE hours.")* Thank you! — Pascal Nguyen, DMD, NMD, PJN Dental Education
 
 ## 5. Jenn's 3 asks (delivered to her Slack DM 7/14, 3:58pm PT)
 
