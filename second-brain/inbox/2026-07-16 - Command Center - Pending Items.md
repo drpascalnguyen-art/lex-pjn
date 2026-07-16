@@ -5,10 +5,7 @@ File under: Life Command Center / Active Lanes. Source of truth: `ai-dentist/MAS
 ## AI Dentist — launch (lane: business)
 
 **Today (7/16):**
-- [ ] #1 Send Sandra follow-up — STAGED, two taps when Pascal returns:
-  1. Slack → Hermes/Jarvis DM → a prepared draft is waiting at the message box → hit SEND (this orders Jarvis to build the Gmail draft with the signed PDF attached)
-  2. When Jarvis confirms → Gmail → Drafts → review → Send to Sandra
-  (Direct Gmail-draft creation from remote session is permission-blocked; Slack draft route verified working. Old May drafts to Sandra in Gmail are stale — delete, don't send.)
+- [x] #1 Sandra follow-up SENT 7/16 (~3-4pm PT): follow-up email + forward of 7/9 signed-agreement email, both to sandra@ + izabelle@ cc. Verified in Sent. Now WAITING on her reply re: course approval form.
 - [x] #2 Skool → Payouts: DONE 7/16 (Pascal's own account connected)
 - [x] #3 Skool → Pricing: DONE 7/16 — $79/month live
 
