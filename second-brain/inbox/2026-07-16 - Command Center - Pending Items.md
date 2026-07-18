@@ -5,7 +5,7 @@ File under: Life Command Center / Active Lanes. Source of truth: `ai-dentist/MAS
 ## AI Dentist — launch (lane: business)
 
 **Today (7/16):**
-- [x] #1 Sandra follow-up SENT 7/16 (~3-4pm PT): follow-up email + forward of 7/9 signed-agreement email, both to sandra@ + izabelle@ cc. Verified in Sent. Now WAITING on her reply re: course approval form.
+- [x] #1 Sandra follow-up SENT 7/16 — REPLY RECEIVED 7/17 10:40am from Izabelle (hello@ceapproved.com): signed agreement RECEIVED, correct title CONFIRMED, detailed update promised "later today." Sandra traveling (RDH Under One Roof), back Mon 7/20. Watch inbox for Belle's detailed update; remaining CE gate = course approval form itself.
 - [x] #2 Skool → Payouts: DONE 7/16 (Pascal's own account connected)
 - [x] #3 Skool → Pricing: DONE 7/16 — $79/month live
 
