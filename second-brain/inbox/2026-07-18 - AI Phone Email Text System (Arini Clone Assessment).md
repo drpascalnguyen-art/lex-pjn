@@ -25,6 +25,22 @@ Full assessment + architecture blueprint saved to the repo:
 - [ ] Pascal: BAAs (Retell, Twilio, Anthropic, Google) before any PHI flows if building
 - [ ] Next Claude session: scaffold Retell agent config + Claude prompt pack + missed-call text-back flow (on request)
 
+## Update (same day): Pascal said "Do it" — MVP scaffold built
+
+Path B scaffold now lives in `ai-dentist/ai-front-desk/build/`:
+
+- `README.md` — architecture diagram, ordered setup checklist (compliance gate first), safe rollout via overflow forwarding, test plan
+- `prompts/receptionist-voice.md` — full Retell voice-agent prompt (Dana persona, emergency triage first, appointment-request + message flows, hard guardrails: no clinical advice/prices/promised slots)
+- `prompts/sms-agent.md` — SMS conversation prompt with `[[STAFF_SUMMARY]]` routing marker
+- `prompts/email-triage.md` — phase-2 email classification + draft-reply prompt (human always sends)
+- `retell/functions.json` — 3 custom functions: request_appointment, take_message, escalate_emergency
+- `server.js` — Express webhook server (syntax-verified): Retell mid-call functions → staff SMS alerts; post-call webhook → missed-call text-back; inbound SMS → Claude conversation
+- `package.json` + `.env.example`
+
+**Before any real patient traffic:** BAAs with Retell, Twilio, Anthropic (compliance gate is step 0 in the README).
+
 ## Artifacts
 
 - Assessment memo: `ai-dentist/ai-front-desk/2026-07-18-arini-clone-assessment.md` (includes vendor table, 3-path analysis, MVP scope, compliance checklist, sources)
+- MVP build scaffold: `ai-dentist/ai-front-desk/build/`
+- PR: https://github.com/drpascalnguyen-art/lex-pjn/pull/3

@@ -1,0 +1,46 @@
+{
+  "_comment": "Custom functions for the Retell LLM agent. Add each under Agent → Functions, with URL https://<your-host>/webhooks/retell. Retell POSTs {name, args, call} when the agent invokes one mid-call.",
+  "functions": [
+    {
+      "name": "request_appointment",
+      "description": "Log an appointment request after collecting name, patient status, callback number, reason, and preferred times. Staff confirms the actual slot when the office opens.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "full_name": { "type": "string" },
+          "is_current_patient": { "type": "boolean" },
+          "callback_number": { "type": "string", "description": "10-digit US phone number" },
+          "reason": { "type": "string", "description": "e.g. cleaning, toothache, checkup, broken crown" },
+          "preferred_times": { "type": "string", "description": "two day/time preferences in the caller's words" }
+        },
+        "required": ["full_name", "callback_number", "reason", "preferred_times"]
+      }
+    },
+    {
+      "name": "take_message",
+      "description": "Take a message for the team when the request is anything other than an appointment or emergency (billing, prices, insurance, clinical questions, Spanish follow-up, etc).",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "full_name": { "type": "string" },
+          "callback_number": { "type": "string" },
+          "message": { "type": "string", "description": "what the caller needs, in one or two sentences" }
+        },
+        "required": ["full_name", "callback_number", "message"]
+      }
+    },
+    {
+      "name": "escalate_emergency",
+      "description": "Alert the on-call provider immediately for urgent dental issues (uncontrolled bleeding, swelling, knocked-out tooth, trauma, severe pain). Use AFTER telling 911-level cases to call 911.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "full_name": { "type": "string" },
+          "callback_number": { "type": "string" },
+          "situation": { "type": "string", "description": "one-line description of the emergency" }
+        },
+        "required": ["callback_number", "situation"]
+      }
+    }
+  ]
+}
