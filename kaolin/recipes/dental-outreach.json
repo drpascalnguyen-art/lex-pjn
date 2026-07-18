@@ -1,0 +1,33 @@
+{
+  "name": "dental-outreach",
+  "description": "Enrichment pipeline for AI Practice Systems for Dentists outreach: derive domain, guess email via waterfall, score fit, and draft a personalized opener.",
+  "columns": [
+    {
+      "name": "domain",
+      "type": "formula",
+      "expr": "row.website ? String(row.website).replace(/^https?:\\/\\//,'').replace(/^www\\./,'').split('/')[0] : ''"
+    },
+    {
+      "name": "pattern_email",
+      "type": "formula",
+      "expr": "row.domain && row.owner_name ? String(row.owner_name).trim().split(/\\s+/)[0].toLowerCase().replace(/[^a-z]/g,'') + '@' + row.domain : ''"
+    },
+    {
+      "name": "best_email",
+      "type": "waterfall",
+      "sources": ["email", "pattern_email"]
+    },
+    {
+      "name": "ai_fit_score",
+      "type": "ai",
+      "maxTokens": 512,
+      "prompt": "Rate 1-10 how good a fit this dental practice is for an 'AI Practice Systems for Dentists' program (AI-powered front desk, recall, treatment-plan follow-up). Practice: {{practice_name}}, {{city}}, {{state}}. Chairs: {{chairs}}. Notes: {{notes}}. Higher = independent practice, multiple chairs, growth signals. Reply with ONLY the number."
+    },
+    {
+      "name": "ai_opener",
+      "type": "ai",
+      "maxTokens": 1024,
+      "prompt": "Write a 2-sentence personalized cold-email opener to {{owner_name}} at {{practice_name}} in {{city}}, {{state}}, from Dr. Pascal Nguyen, a dentist who teaches other dentists to install AI systems (front desk, recall, treatment follow-up) in their practice. Reference something concrete from these notes: {{notes}}. Warm, peer-to-peer, no hype, no exclamation marks. Reply with ONLY the two sentences."
+    }
+  ]
+}

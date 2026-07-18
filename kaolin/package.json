@@ -1,0 +1,22 @@
+{
+  "name": "kaolin",
+  "version": "0.1.0",
+  "description": "Clay-style lead enrichment table + CLI for AI Practice Systems for Dentists",
+  "main": "bin/kaolin.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.112.3"
+  },
+  "type": "module",
+  "bin": {
+    "kaolin": "./bin/kaolin.js"
+  }
+}
