@@ -1,0 +1,41 @@
+# AI Front Desk — Setup Progress Tracker
+
+Live status of the account setup. Update as you go. See `README.md` for the full plan.
+
+## Scoreboard (as of 2026-07-21)
+
+| Service | Status | Notes |
+|---|---|---|
+| **Twilio** | 🟡 Number picked, awaiting compliance review | Account active, $50 balance. 503 was sold out → chose a **971 (Beaverton)** local number w/ SMS+MMS+Voice. Purchase blocked until Twilio's compliance-profile review clears (email will confirm, few hrs–2 biz days). BAA: not yet requested. |
+| **Retell** | 🟡 Agent built, not yet configured | Workspace "PJN Dental". Conductor generated a starter "Receptionist" agent (voice Cimo, model GPT 5.4, ~$0.115/min). Ran a browser test call — generic/weak, as expected (still Conductor's script, not Dana). BAA: not yet requested. |
+| **Anthropic** | 🟡 Account created, key pending | Console account made. Got routed into a developer/terminal quickstart and stopped. **To finish:** create an API key named `pjn-front-desk`, copy the `sk-ant-...` string to password manager, add ~$25 credits, request BAA. Ignore all terminal/CLI instructions — not needed. |
+| **Server deploy** | ⚪ Not started | Later step; Claude handles the heavy lifting. |
+
+## When you're back home — resume here (in priority order)
+
+1. **Retell — the transplant (biggest visible win).** Give Claude these 4 facts:
+   practice name (as patients know it), office hours, street address + parking note,
+   on-call/emergency number. Claude returns the finished **Dana prompt**. Then in the
+   Retell agent: paste Dana into the prompt, **switch model from GPT 5.4 → a Claude model**,
+   re-test in browser. Should sound dramatically better.
+2. **Anthropic — finish the key.** console.anthropic.com → API Keys → Create → name
+   `pjn-front-desk` → copy `sk-ant-...` to password manager. Add $25 credits. (Ignore terminal steps.)
+3. **BAAs — fire off all three** (free paperwork, runs on its own clock, only gates real
+   patient traffic): Twilio (search "HIPAA" in console help), Retell (dashboard support),
+   Anthropic (console support). One sentence each: "Dental practice handling PHI — please
+   execute your BAA."
+4. **Twilio — once compliance review clears** (check email): re-run the 971 search, buy the
+   number. Then it waits for Retell + server before webhooks get wired.
+
+## Credentials checklist (store in password manager, NEVER commit)
+- [ ] Twilio Account SID (`AC...`)
+- [ ] Twilio Auth Token
+- [ ] Twilio phone number (the 971 once purchased)
+- [ ] Anthropic API key (`sk-ant-...`)
+- [ ] Retell API key (grab later, from Retell dashboard settings)
+
+## Not-blocking reminders
+- Anthropic key only powers the **SMS** side; the **voice** side uses Retell's built-in
+  Claude, so voice testing needs no key.
+- "Add a phone number" in Retell waits on Twilio's number being purchasable.
+- Nothing here touches the practice's public number — it's all forward-to-Twilio.
