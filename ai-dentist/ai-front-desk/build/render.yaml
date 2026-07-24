@@ -34,7 +34,5 @@ services:
         sync: false
       - key: STAFF_ALERT_PHONE
         sync: false
-      - key: ON_CALL_PHONE
-        sync: false
       - key: RETELL_WEBHOOK_SECRET
         sync: false

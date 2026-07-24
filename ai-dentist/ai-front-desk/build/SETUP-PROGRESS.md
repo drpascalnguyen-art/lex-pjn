@@ -7,7 +7,7 @@ Live status of the account setup. Update as you go. See `README.md` for the full
 | Service | Status | Notes |
 |---|---|---|
 | **Twilio** | 🟢 Number purchased: **+1 971-385-6800** | Account active (SID AC…f743). Profile approved 7/24. Number bought 7/24 w/ SMS+MMS+Voice. Voice webhook (→Retell) and Messaging webhook (→server) NOT set yet — wait for deploy. SHAKEN/STIR + Voice Integrity = optional/free, skipped. A2P texting registration = still to do (answers pre-written in `A2P-registration-answers.md`). BAA: not yet requested. |
-| **Retell** | 🟢 Dana agent configured (via Codex) | Workspace "PJN Dental". Dana prompt pasted, model moved to Claude. Mostly set up. Still pending: (a) real `[ON-CALL NUMBER]` in prompt, (b) 3 custom functions (wait for server deploy), (c) importing the Twilio number once purchased. BAA: not yet requested. |
+| **Retell** | 🟢 Dana configured; prompt UPDATED (no on-call) | Workspace "PJN Dental". Dana on Claude. **Design change 7/24: no live on-call line** — urgent calls become URGENT messages flagged to staff for ASAP callback; 911 for life-threatening. Re-paste the updated prompt from `prompts/receptionist-voice-FILLED.md` (or `CODEX-PROMPT-retell-setup.md`) into the Retell agent. Still pending: 3 custom functions (wait for server deploy), importing the Twilio number. BAA: not yet requested. |
 | **Anthropic** | 🟡 Account created, key pending | Console account made. Got routed into a developer/terminal quickstart and stopped. **To finish:** create an API key named `pjn-front-desk`, copy the `sk-ant-...` string to password manager, add ~$25 credits, request BAA. Ignore all terminal/CLI instructions — not needed. |
 | **Server deploy** | ⚪ Not started | Later step; Claude handles the heavy lifting. |
 

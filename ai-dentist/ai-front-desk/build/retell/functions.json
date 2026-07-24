@@ -31,7 +31,7 @@
     },
     {
       "name": "escalate_emergency",
-      "description": "Alert the on-call provider immediately for urgent dental issues (uncontrolled bleeding, swelling, knocked-out tooth, trauma, severe pain). Use AFTER telling 911-level cases to call 911.",
+      "description": "Flag an urgent dental issue to the team as URGENT for ASAP callback (uncontrolled bleeding, swelling, knocked-out tooth, trauma, severe pain). Use AFTER telling 911-level cases (trouble breathing/swallowing, swelling near eye/throat) to call 911. There is no live on-call line; this texts the front-desk staff alert number.",
       "parameters": {
         "type": "object",
         "properties": {

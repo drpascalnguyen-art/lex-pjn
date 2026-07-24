@@ -8,8 +8,8 @@ require *your* accounts/card/secrets. Do them in this order.
 - [ ] Twilio **Account SID** (`AC…f743`) and **Auth Token** — Twilio Console home page
 - [ ] Twilio **phone number** (the 971 — buy it first, step 0)
 - [ ] Anthropic **API key** (`sk-ant-…`)
-- [ ] **Staff alert phone** — the cell/number that should receive lead + message + emergency texts
-- [ ] **On-call phone** — emergency escalation number
+- [ ] **Staff alert phone** — the cell/number that should receive lead + message + URGENT texts
+      (urgent/emergency calls are flagged here for ASAP callback; there is no separate on-call line)
 - [ ] (optional) A **Retell webhook secret** — any random string you make up; you'll paste the
       same value into Retell's function webhook config later
 
@@ -27,8 +27,8 @@ Twilio Console → Phone Numbers → Buy a number → 971, Local, SMS+MMS+Voice 
 ## Step 2 — Paste the secrets (the `sync:false` ones)
 In the service's **Environment** tab, fill each secret from your password manager:
 `ANTHROPIC_API_KEY`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_NUMBER`,
-`STAFF_ALERT_PHONE`, `ON_CALL_PHONE`, `RETELL_WEBHOOK_SECRET`.
-(Phone numbers in E.164 format, e.g. `+15035551234`.)
+`STAFF_ALERT_PHONE`, `RETELL_WEBHOOK_SECRET`.
+(Phone numbers in E.164 format, e.g. `+19713856800`.)
 
 ## Step 3 — Deploy & verify
 1. Click **Create / Deploy**. Wait for the build to go green.

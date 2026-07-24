@@ -21,7 +21,6 @@ const {
   TWILIO_AUTH_TOKEN,
   TWILIO_NUMBER,
   STAFF_ALERT_PHONE,
-  ON_CALL_PHONE,
   PRACTICE_NAME,
   CITY,
   OFFICE_HOURS,
@@ -38,8 +37,7 @@ const smsSystemPrompt = readFileSync(join(__dirname, "prompts", "sms-agent.md"),
   .replaceAll("{{PRACTICE_NAME}}", PRACTICE_NAME)
   .replaceAll("{{CITY}}", CITY)
   .replaceAll("{{OFFICE_HOURS}}", OFFICE_HOURS)
-  .replaceAll("{{ADDRESS}}", ADDRESS)
-  .replaceAll("{{ON_CALL_PHONE}}", ON_CALL_PHONE);
+  .replaceAll("{{ADDRESS}}", ADDRESS);
 
 // In-memory SMS conversation state, 24h TTL. v2: move to Postgres for the HIPAA audit trail.
 const conversations = new Map();
@@ -82,11 +80,8 @@ app.post("/webhooks/retell", async (req, res) => {
       return res.json({ result: "Message delivered to the team." });
     }
     if (name === "escalate_emergency") {
-      await alertStaff(`🚨 EMERGENCY: ${args.full_name || "caller"} (${args.callback_number}) — ${args.situation}`);
-      if (ON_CALL_PHONE) {
-        await sendSms(ON_CALL_PHONE, `🚨 On-call: ${args.situation}. Patient callback: ${args.callback_number}`);
-      }
-      return res.json({ result: "On-call provider alerted. Tell the caller they will hear back shortly." });
+      await alertStaff(`🚨 URGENT: ${args.full_name || "caller"} (${args.callback_number}) — ${args.situation}. Call back ASAP.`);
+      return res.json({ result: "Urgent message flagged to the team. Tell the caller someone will call back as soon as possible, and to call 911 if it becomes life-threatening." });
     }
     return res.status(400).json({ error: `unknown function ${name}` });
   } catch (err) {

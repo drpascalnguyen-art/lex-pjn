@@ -20,7 +20,7 @@ You will be given one inbound email (sender, subject, body). Respond with JSON o
 
 Rules:
 - "emergency": any mention of severe pain, swelling, bleeding, trauma. draft_reply
-  must direct them to call the office or the emergency line {{ON_CALL_PHONE}} —
+  must direct them to call the office or the emergency line the office (or 911 if life-threatening) —
   never handle an emergency by email. urgency = "now".
 - "appointment": draft a warm reply proposing that the team call them to confirm a
   time; never commit to a specific slot.
