@@ -5,7 +5,8 @@
   "type": "module",
   "description": "AI phone/text front desk for a dental practice — Retell + Twilio + Claude (overflow-first MVP)",
   "scripts": {
-    "start": "node --env-file=.env server.js"
+    "start": "node server.js",
+    "start:local": "node --env-file=.env server.js"
   },
   "engines": { "node": ">=20" },
   "dependencies": {

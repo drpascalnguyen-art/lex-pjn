@@ -6,7 +6,7 @@ Live status of the account setup. Update as you go. See `README.md` for the full
 
 | Service | Status | Notes |
 |---|---|---|
-| **Twilio** | 🟡 Business Profile resubmitted after 1 rejection | Account active (SID AC…f743), $50 balance. 503 sold out → chose a **971 (Beaverton)** local number w/ SMS+MMS+Voice. **Business Profile REJECTED 7/22, Error 18606** = email domain didn't match website domain (had used Gmail). **Fixed:** switched to a domain-matched business email; legal name/EIN/website confirmed good; resubmitted. Awaiting re-review (~1 day, email to Gmail). Number purchase still gated on this. BAA: not yet requested. |
+| **Twilio** | 🟢 Business Profile APPROVED 7/24 | Account active (SID AC…f743). Profile approved (bundle BU…b1ec) after fixing Error 18606 (domain-matched email). **NEXT: buy the 971 number** — no longer gated. A2P texting registration still to do. BAA: not yet requested. |
 | **Retell** | 🟢 Dana agent configured (via Codex) | Workspace "PJN Dental". Dana prompt pasted, model moved to Claude. Mostly set up. Still pending: (a) real `[ON-CALL NUMBER]` in prompt, (b) 3 custom functions (wait for server deploy), (c) importing the Twilio number once purchased. BAA: not yet requested. |
 | **Anthropic** | 🟡 Account created, key pending | Console account made. Got routed into a developer/terminal quickstart and stopped. **To finish:** create an API key named `pjn-front-desk`, copy the `sk-ant-...` string to password manager, add ~$25 credits, request BAA. Ignore all terminal/CLI instructions — not needed. |
 | **Server deploy** | ⚪ Not started | Later step; Claude handles the heavy lifting. |

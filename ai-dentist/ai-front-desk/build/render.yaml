@@ -1,0 +1,40 @@
+# Render Blueprint for the AI Front Desk server.
+# In Render: New → Blueprint → connect this repo → set the service Root Directory to
+# ai-dentist/ai-front-desk/build (so Render finds this file + package.json + server.js).
+# Fill the sync:false secrets in the Render dashboard (never commit them).
+services:
+  - type: web
+    name: pjn-ai-front-desk
+    runtime: node
+    plan: starter            # ~$7/mo; smallest paid tier (free tier sleeps and would drop calls)
+    rootDir: ai-dentist/ai-front-desk/build
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: ANTHROPIC_MODEL
+        value: claude-sonnet-5
+      - key: PRACTICE_NAME
+        value: PJN Dental
+      - key: CITY
+        value: Beaverton
+      - key: OFFICE_HOURS
+        value: Mon/Tue/Wed 7am-7pm
+      - key: ADDRESS
+        value: 17535 SW Tualatin Valley Hwy, Beaverton, OR 97003
+      # --- Secrets: set these in the Render dashboard, NOT here ---
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_NUMBER
+        sync: false
+      - key: STAFF_ALERT_PHONE
+        sync: false
+      - key: ON_CALL_PHONE
+        sync: false
+      - key: RETELL_WEBHOOK_SECRET
+        sync: false
