@@ -6,7 +6,7 @@ Live status of the account setup. Update as you go. See `README.md` for the full
 
 | Service | Status | Notes |
 |---|---|---|
-| **Twilio** | 🟢 Business Profile APPROVED 7/24 | Account active (SID AC…f743). Profile approved (bundle BU…b1ec) after fixing Error 18606 (domain-matched email). **NEXT: buy the 971 number** — no longer gated. A2P texting registration still to do. BAA: not yet requested. |
+| **Twilio** | 🟢 Number purchased: **+1 971-385-6800** | Account active (SID AC…f743). Profile approved 7/24. Number bought 7/24 w/ SMS+MMS+Voice. Voice webhook (→Retell) and Messaging webhook (→server) NOT set yet — wait for deploy. SHAKEN/STIR + Voice Integrity = optional/free, skipped. A2P texting registration = still to do (answers pre-written in `A2P-registration-answers.md`). BAA: not yet requested. |
 | **Retell** | 🟢 Dana agent configured (via Codex) | Workspace "PJN Dental". Dana prompt pasted, model moved to Claude. Mostly set up. Still pending: (a) real `[ON-CALL NUMBER]` in prompt, (b) 3 custom functions (wait for server deploy), (c) importing the Twilio number once purchased. BAA: not yet requested. |
 | **Anthropic** | 🟡 Account created, key pending | Console account made. Got routed into a developer/terminal quickstart and stopped. **To finish:** create an API key named `pjn-front-desk`, copy the `sk-ant-...` string to password manager, add ~$25 credits, request BAA. Ignore all terminal/CLI instructions — not needed. |
 | **Server deploy** | ⚪ Not started | Later step; Claude handles the heavy lifting. |
