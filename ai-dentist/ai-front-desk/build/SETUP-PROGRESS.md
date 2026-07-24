@@ -6,7 +6,7 @@ Live status of the account setup. Update as you go. See `README.md` for the full
 
 | Service | Status | Notes |
 |---|---|---|
-| **Twilio** | 🟡 Number picked, awaiting compliance review | Account active, $50 balance. 503 was sold out → chose a **971 (Beaverton)** local number w/ SMS+MMS+Voice. Purchase blocked until Twilio's compliance-profile review clears (email will confirm, few hrs–2 biz days). BAA: not yet requested. |
+| **Twilio** | 🟡 Business Profile resubmitted after 1 rejection | Account active (SID AC…f743), $50 balance. 503 sold out → chose a **971 (Beaverton)** local number w/ SMS+MMS+Voice. **Business Profile REJECTED 7/22, Error 18606** = email domain didn't match website domain (had used Gmail). **Fixed:** switched to a domain-matched business email; legal name/EIN/website confirmed good; resubmitted. Awaiting re-review (~1 day, email to Gmail). Number purchase still gated on this. BAA: not yet requested. |
 | **Retell** | 🟡 Agent built, not yet configured | Workspace "PJN Dental". Conductor generated a starter "Receptionist" agent (voice Cimo, model GPT 5.4, ~$0.115/min). Ran a browser test call — generic/weak, as expected (still Conductor's script, not Dana). BAA: not yet requested. |
 | **Anthropic** | 🟡 Account created, key pending | Console account made. Got routed into a developer/terminal quickstart and stopped. **To finish:** create an API key named `pjn-front-desk`, copy the `sk-ant-...` string to password manager, add ~$25 credits, request BAA. Ignore all terminal/CLI instructions — not needed. |
 | **Server deploy** | ⚪ Not started | Later step; Claude handles the heavy lifting. |
