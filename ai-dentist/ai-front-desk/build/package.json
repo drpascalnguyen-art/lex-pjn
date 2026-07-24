@@ -1,0 +1,17 @@
+{
+  "name": "ai-front-desk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "AI phone/text front desk for a dental practice — Retell + Twilio + Claude (overflow-first MVP)",
+  "scripts": {
+    "start": "node server.js",
+    "start:local": "node --env-file=.env server.js"
+  },
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.30.0",
+    "express": "^4.19.0",
+    "twilio": "^5.3.0"
+  }
+}
